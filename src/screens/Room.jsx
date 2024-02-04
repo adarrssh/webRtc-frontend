@@ -135,17 +135,18 @@ const RoomPage = () => {
     <div>
       <h1>Room Page</h1>
       <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
-      {myStream && <button onClick={sendStreams}>Send Stream</button>}
-      {remoteSocketId && <button onClick={handleCallUser}>CALL</button>}
+      {myStream && <button onClick={sendStreams}  style={{ marginTop: '50px' }} >Send Stream</button>}
+      {remoteSocketId && <button onClick={handleCallUser}  style={{ marginTop: '50px' }} >CALL</button>}
       {myStream && (
         <>
           <h1>My Stream</h1>
-          <ReactPlayer
-            playing
-            
-            height="100px"
+          <video
+            autoPlay
+            playsInline
+            muted
+            height="300px"
             width="200px"
-            url={myStream}
+            ref={(videoRef) => videoRef && (videoRef.srcObject = myStream)}
           />
           <button onClick={toggleCamera}>toggle camera</button>
           <button onClick={toggleAudio}>toggle mic</button>
@@ -154,11 +155,12 @@ const RoomPage = () => {
       {remoteStream && (
         <>
           <h1>Remote Stream</h1>
-          <ReactPlayer
-            playing
-            height="100px"
+          <video
+            autoPlay
+            playsInline
+            height="300px"
             width="200px"
-            url={remoteStream}
+            ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
           />
         </>
       )}
