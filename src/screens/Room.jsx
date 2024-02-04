@@ -86,6 +86,27 @@ const RoomPage = () => {
     });
   }, []);
 
+  const toggleCamera = () => {
+    const videoTracks = myStream.getVideoTracks();
+    if (videoTracks.length > 0) {
+      const isEnabled = videoTracks[0].enabled;
+      videoTracks.forEach(track => {
+        track.enabled = !isEnabled;
+      });
+      setMyStream(new MediaStream(myStream.getAudioTracks().concat(videoTracks)));
+    }
+  }
+  
+  const toggleAudio = () => {
+    const audioTrack = myStream.getAudioTracks()[0];
+  
+    if (audioTrack) {
+      audioTrack.enabled = !audioTrack.enabled;
+      setMyStream(new MediaStream([myStream.getVideoTracks()[0], audioTrack]));
+    }
+  };
+  
+
   useEffect(() => {
     socket.on("user:joined", handleUserJoined);
     socket.on("incomming:call", handleIncommingCall);
@@ -109,6 +130,7 @@ const RoomPage = () => {
     handleNegoNeedFinal,
   ]);
 
+
   return (
     <div>
       <h1>Room Page</h1>
@@ -120,11 +142,13 @@ const RoomPage = () => {
           <h1>My Stream</h1>
           <ReactPlayer
             playing
-            muted
+            
             height="100px"
             width="200px"
             url={myStream}
           />
+          <button onClick={toggleCamera}>toggle camera</button>
+          <button onClick={toggleAudio}>toggle mic</button>
         </>
       )}
       {remoteStream && (
