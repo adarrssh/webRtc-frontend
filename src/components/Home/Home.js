@@ -33,38 +33,51 @@ export const Home = () => {
                 </Box>
             </Box>
 
+            {/* main content body */}
             <Box
                 width={"100%"}
-                height={"3rem"}
                 display={"flex"}
                 flexDir={"row"}
-                justifyContent={"space-between"}
-
+                marginTop={"10vh"}
                 // backgroundColor={"red"}
-                marginTop={"5vh"}
+                justifyContent={"center"}
+                
             >
+
+                 {/* left box */}
                 <Box
 
                     paddingLeft={10}
                     flex={2}
+                    width={"100%"}
                     paddingRight={5}
-                    m={{ base: 0, sm: 4 }} p={{ base: 0, sm: 4 }}
+                    // backgroundColor={"blue"}
+                    display={"flex"}
+                    flexDir={"column"}
+                    justifyContent={"center"}
+                    // textAlign={"center"}
                 >
+                    <Box
+                    textAlign={{base:"center",lg:"left"}}
+                    // backgroundColor={"yellow"}
+                    >
+
 
                     <Text paddingTop={"1rem"} fontSize={"1.9rem"} fontWeight={"bold"}>From boardroom meetings to virtual <br /> catch-ups, make every call count</Text>
                     <Text paddingTop={"2rem"} fontSize={"1.2rem"}>Experience the ultimate in video calling conferenece <br /> with our platform</Text>
-
+                    </Box>
                     <Box
                         display={"flex"}
                         flexDir={"row"}
-                        justifyContent={"flex-start"}
-                        paddingTop={"1rem"}
-                        flexDirection={{ base: "column", sm: "row" }}
+                        justifyContent={{base:"center",sm:"center",lg:"flex-start"}}
+                        paddingTop={"3rem"}
+                        flexDirection={{ base:"column", sm: "row" }}
 
                     >
                         <Button
                             padding={"1.5rem"}
                             backgroundColor={"#54B435"}
+                            textAlign={{base:"left"}}
                             color={"white"}
                             border={"1px"}
                             borderColor={"#54B435"}
@@ -77,7 +90,8 @@ export const Home = () => {
                         </Button>
 
                         <Button
-                            marginLeft={"1rem"}
+                            marginLeft={{sm:"1rem"}}
+                            marginTop={{base:"1rem",sm:"0"}}
                             padding={"1.5rem"}
                             border={"1px"}
                             borderColor={"#54B435"}
@@ -85,10 +99,10 @@ export const Home = () => {
                             color={"black"}
                             _hover={{backgroundColor:"none"}}
                         >
-                            <Image 
+                            <Image
                             src={Keyboard}
                             color={"black"}
-                            ></Image>
+                            />
 
                             <Input
                          
@@ -105,7 +119,7 @@ export const Home = () => {
                            
                         </Button>
 
-                        <Button 
+                        {/* <Button 
                         
                         marginLeft={"1rem"}
                         padding={"1.5rem"}
@@ -115,18 +129,26 @@ export const Home = () => {
                         borderColor={"#54B435"}
                         _hover={{backgroundColor:"none"}}
                         
-                        >Join</Button>
+                        >Join</Button> */}
 
                     </Box>
 
                 </Box>
+
+                {/* right box */}
                 <Box
-                    display={{ base: "none", md: "block" }}
+                    display={{ base: "none", lg: "block" }}
                     paddingRight={10}
                     flex={1}>
                     <Image src={HomeImage}></Image>
                 </Box>
             </Box>
+            {/* <Box
+            backgroundColor={"purple"}
+            width={{base:"100%",sm:"100%",md:"50%",lg:"90%"}}
+            >
+                hey
+            </Box> */}
         </Container>
     )
 }
