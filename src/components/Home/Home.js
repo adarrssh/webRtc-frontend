@@ -18,7 +18,7 @@ export const Home = () => {
             >
                 <Box
                     paddingTop={4}
-                    paddingLeft={10}
+                    paddingLeft={{base:2,sm:10}}
                     color={"#54B435"}
                     fontWeight={"bold"}
                     fontSize={"2rem"}
@@ -27,7 +27,7 @@ export const Home = () => {
                 </Box>
                 <Box
                     paddingTop={4}
-                    paddingRight={10}
+                    paddingRight={{base:3,sm:10}}
                 >
                     <Image src={profileImage}></Image>
                 </Box>
