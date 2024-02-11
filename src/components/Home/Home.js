@@ -21,7 +21,7 @@ export const Home = () => {
                     paddingLeft={{base:2,sm:10}}
                     color={"#54B435"}
                     fontWeight={"bold"}
-                    fontSize={"2rem"}
+                    fontSize={{ base:"1.5rem",sm:"2rem"}}
                 >
                     Meet Cute
                 </Box>
@@ -63,8 +63,8 @@ export const Home = () => {
                     >
 
 
-                    <Text paddingTop={"1rem"} fontSize={"1.9rem"} fontWeight={"bold"}>From boardroom meetings to virtual <br /> catch-ups, make every call count</Text>
-                    <Text paddingTop={"2rem"} fontSize={"1.2rem"}>Experience the ultimate in video calling conferenece <br /> with our platform</Text>
+                    <Text paddingTop={"1rem"} fontSize={{base:"1.4rem",sm:"1.9rem"}} fontWeight={"bold"}>From boardroom meetings to virtual <br /> catch-ups, make every call count</Text>
+                    <Text paddingTop={"2rem"} fontSize={{base:"0.8rem",sm:"1.2rem"}}>Experience the ultimate in video calling conferenece <br /> with our platform</Text>
                     </Box>
                     <Box
                         display={"flex"}
