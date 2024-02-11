@@ -49,6 +49,7 @@ const LobbyScreen = () => {
           type="text"
           id="room"
           value={room}
+          
           onChange={(e) => setRoom(e.target.value)}
         />
         <br />

@@ -8,6 +8,12 @@ const RoomPage = () => {
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
+  const [message, setMessage] = useState('');
+  const [userDetails, setUserDetails] = useState({
+    name: '',
+    email:'',
+  })
+
 
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room`);
@@ -78,6 +84,10 @@ const RoomPage = () => {
     await peer.setLocalDescription(ans);
   }, []);
 
+  const handleIncomingMessage = (message) => {
+      console.log(message)
+  }
+
   useEffect(() => {
     peer.peer.addEventListener("track", async (ev) => {
       const remoteStream = ev.streams;
@@ -113,6 +123,7 @@ const RoomPage = () => {
     socket.on("call:accepted", handleCallAccepted);
     socket.on("peer:nego:needed", handleNegoNeedIncomming);
     socket.on("peer:nego:final", handleNegoNeedFinal);
+    socket.on('incoming:message', handleIncomingMessage)
 
     return () => {
       socket.off("user:joined", handleUserJoined);
@@ -120,6 +131,8 @@ const RoomPage = () => {
       socket.off("call:accepted", handleCallAccepted);
       socket.off("peer:nego:needed", handleNegoNeedIncomming);
       socket.off("peer:nego:final", handleNegoNeedFinal);
+      socket.off('incoming:message', handleIncomingMessage)
+
     };
   }, [
     socket,
@@ -130,6 +143,12 @@ const RoomPage = () => {
     handleNegoNeedFinal,
   ]);
 
+  const sendMessage = () => {
+    if (socket) {
+      socket.emit('send-message', { remoteSocketId, message });
+      setMessage(''); // Clear input after sending the message
+    }
+  };
 
   return (
     <div>
@@ -140,6 +159,14 @@ const RoomPage = () => {
       {myStream && (
         <>
           <h1>My Stream</h1>
+
+
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
+      <button onClick={sendMessage}>Send</button>
           <video
             autoPlay
             playsInline
@@ -162,8 +189,10 @@ const RoomPage = () => {
             width="200px"
             ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
           />
+
         </>
       )}
+
     </div>
   );
 };
