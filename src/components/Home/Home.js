@@ -82,6 +82,8 @@ export const Home = () => {
                             border={"1px"}
                             borderColor={"#54B435"}
                             _hover={{backgroundColor:"none"}}
+                            display={{base:"flex"}}
+                            justifyContent={{base:"flex-start"}}
                         >
                             <Image src={Video} />
                             <Text paddingLeft={"1rem"}>
