@@ -59,7 +59,7 @@ export const Home = () => {
                     <Text
                      marginRight={"20px"}
                       paddingTop={2}
-                      display={{sm:"none",lg:"block"}}
+                      display={{base:"none",lg:"block"}}
                       >{formatDate(currentDateTime)}</Text>
                     <Image src={profileImage} borderRadius={"50%"} height={"50px"}></Image>
                 </Box>
