@@ -1,5 +1,5 @@
 import { Box, Button, Container, Flex, Image, Input, Text } from '@chakra-ui/react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import profileImage from "../../Image/Profile.png";
 import HomeImage from "../../Image/HomePageImage.png";
 import Video from "../../Image/VideoCamera.png";
@@ -7,6 +7,30 @@ import Keyboard from "../../Image/Keyboard.png";
 
 
 export const Home = () => {
+
+    const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000); // Update every second
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, []);
+
+  const formatDate = (date) => {
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      // Remove seconds from formatting options
+    };
+    return date.toLocaleDateString(undefined, options);
+  };
+
     return (
         <Container centerContent maxWidth={"1500px"} height={"100vh"}>
             <Box
@@ -28,8 +52,16 @@ export const Home = () => {
                 <Box
                     paddingTop={4}
                     paddingRight={{base:3,sm:10}}
+                    display={"flex"}
+                    justifyContent={"space-between"}
+                    // alignItems={"center"}
                 >
-                    <Image src={profileImage}></Image>
+                    <Text
+                     marginRight={"20px"}
+                      paddingTop={2}
+                      display={{sm:"none",lg:"block"}}
+                      >{formatDate(currentDateTime)}</Text>
+                    <Image src={profileImage} borderRadius={"50%"} height={"50px"}></Image>
                 </Box>
             </Box>
 
