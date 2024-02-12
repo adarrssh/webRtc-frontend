@@ -2,18 +2,20 @@ import React, { useEffect, useCallback, useState } from "react";
 import ReactPlayer from "react-player";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
+import { Box, Button, Container } from "@chakra-ui/react";
 
 const RoomPage = () => {
   const socket = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [userDetails, setUserDetails] = useState({
-    name: '',
-    email:'',
-  })
+    name: "",
+    email: "",
+  });
 
+  const [openChat, setopenChat] = useState(false);
 
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room`);
@@ -85,8 +87,8 @@ const RoomPage = () => {
   }, []);
 
   const handleIncomingMessage = (message) => {
-      console.log(message)
-  }
+    console.log(message);
+  };
 
   useEffect(() => {
     peer.peer.addEventListener("track", async (ev) => {
@@ -100,22 +102,23 @@ const RoomPage = () => {
     const videoTracks = myStream.getVideoTracks();
     if (videoTracks.length > 0) {
       const isEnabled = videoTracks[0].enabled;
-      videoTracks.forEach(track => {
+      videoTracks.forEach((track) => {
         track.enabled = !isEnabled;
       });
-      setMyStream(new MediaStream(myStream.getAudioTracks().concat(videoTracks)));
+      setMyStream(
+        new MediaStream(myStream.getAudioTracks().concat(videoTracks))
+      );
     }
-  }
-  
+  };
+
   const toggleAudio = () => {
     const audioTrack = myStream.getAudioTracks()[0];
-  
+
     if (audioTrack) {
       audioTrack.enabled = !audioTrack.enabled;
       setMyStream(new MediaStream([myStream.getVideoTracks()[0], audioTrack]));
     }
   };
-  
 
   useEffect(() => {
     socket.on("user:joined", handleUserJoined);
@@ -123,7 +126,7 @@ const RoomPage = () => {
     socket.on("call:accepted", handleCallAccepted);
     socket.on("peer:nego:needed", handleNegoNeedIncomming);
     socket.on("peer:nego:final", handleNegoNeedFinal);
-    socket.on('incoming:message', handleIncomingMessage)
+    socket.on("incoming:message", handleIncomingMessage);
 
     return () => {
       socket.off("user:joined", handleUserJoined);
@@ -131,8 +134,7 @@ const RoomPage = () => {
       socket.off("call:accepted", handleCallAccepted);
       socket.off("peer:nego:needed", handleNegoNeedIncomming);
       socket.off("peer:nego:final", handleNegoNeedFinal);
-      socket.off('incoming:message', handleIncomingMessage)
-
+      socket.off("incoming:message", handleIncomingMessage);
     };
   }, [
     socket,
@@ -145,56 +147,143 @@ const RoomPage = () => {
 
   const sendMessage = () => {
     if (socket) {
-      socket.emit('send-message', { remoteSocketId, message });
-      setMessage(''); // Clear input after sending the message
+      socket.emit("send-message", { remoteSocketId, message });
+      setMessage(""); // Clear input after sending the message
     }
   };
 
   return (
-    <div>
-      <h1>Room Page</h1>
-      <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
-      {myStream && <button onClick={sendStreams}  style={{ marginTop: '50px' }} >Send Stream</button>}
-      {remoteSocketId && <button onClick={handleCallUser}  style={{ marginTop: '50px' }} >CALL</button>}
-      {myStream && (
-        <>
-          <h1>My Stream</h1>
+    <Box
+      display={"flex"}
+      flexDirection={"row"}
+      maxWidth={"1500px"}
+      height={"100vh"}
+      backgroundColor={"#1E1E1E"}
+    >
+      <Box flex={"3"}>
+        <Box
+          width={"100%"}
+          height={"90vh"}
+          display={"flex"}
+          flexDirection={{base:"row",lg:"row"}}
+        >
+          <Box
+            flex={"1"}
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            padding={4}
+          >
+            {myStream && (
+              <Box
+              >
+                <video
+                 className="video"
+                  autoPlay
+                  playsInline
+                  muted
+                  height="100%"
+                  width="100%"
+                  
+                  ref={(videoRef) =>
+                    videoRef && (videoRef.srcObject = myStream)
+                  }
+                />
+              </Box>
+            )}
+          </Box>
+          <Box  
+            flex={"1"}
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            padding={4}
+            >
+            {remoteStream && (
+              <Box>
+                <video
+                  className="video"
+                  autoPlay
+                  playsInline
+                  height="100%"
+                  width="100%"
+                  ref={(videoRef) =>
+                    videoRef && (videoRef.srcObject = remoteStream)
+                  }
+                />
+              </Box>
+            )}
+          </Box>
+        </Box>
 
-
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send</button>
-          <video
-            autoPlay
-            playsInline
-            muted
-            height="300px"
-            width="200px"
-            ref={(videoRef) => videoRef && (videoRef.srcObject = myStream)}
-          />
-          <button onClick={toggleCamera}>toggle camera</button>
-          <button onClick={toggleAudio}>toggle mic</button>
-        </>
-      )}
-      {remoteStream && (
-        <>
-          <h1>Remote Stream</h1>
-          <video
-            autoPlay
-            playsInline
-            height="300px"
-            width="200px"
-            ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
-          />
-
-        </>
-      )}
-
-    </div>
+        <Box>
+          <Button onClick={() => setopenChat(!openChat)}>Open chat</Button>
+       
+          {myStream && (
+            <Button onClick={sendStreams} >
+              Send Stream
+            </Button>
+          )}
+          {remoteSocketId && (
+            <Button onClick={handleCallUser}>
+              CALL
+            </Button>
+          )}
+        </Box>
+      </Box>
+      {openChat ? <Box flex={"1"}>box2</Box> : <></>}
+    </Box>
   );
 };
 
 export default RoomPage;
+
+// <div>
+// <h1>Room Page</h1>
+// <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
+// <input
+//   type="text"
+//   value={message}
+//   onChange={(e) => setMessage(e.target.value)}
+//   placeholder="enter message"
+// />
+// <button onClick={()=>alert("clicked")}>click</button>
+// {myStream && <button onClick={sendStreams}  style={{ marginTop: '50px' }} >Send Stream</button>}
+// {remoteSocketId && <button onClick={handleCallUser}  style={{ marginTop: '50px' }} >CALL</button>}
+// {myStream && (
+//   <>
+//     <h1>My Stream</h1>
+
+// <input
+//   type="text"
+//   value={message}
+//   onChange={(e) => setMessage(e.target.value)}
+// />
+// <button onClick={sendMessage}>Send</button>
+//     <video
+//       autoPlay
+//       playsInline
+//       muted
+//       height="300px"
+//       width="200px"
+//       ref={(videoRef) => videoRef && (videoRef.srcObject = myStream)}
+//     />
+//     <button onClick={toggleCamera}>toggle camera</button>
+//     <button onClick={toggleAudio}>toggle mic</button>
+//   </>
+// )}
+// {remoteStream && (
+//   <>
+//     <h1>Remote Stream</h1>
+//     <video
+//       autoPlay
+//       playsInline
+//       height="300px"
+//       width="200px"
+//       ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
+//     />
+
+//   </>
+// )}
+
+// </div>
