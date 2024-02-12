@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Image, Input, Text } from '@chakra-ui/react'
+import { Box, Button, Container, Flex, Image, Input, Text, Tooltip } from '@chakra-ui/react'
 import React, { useEffect, useState } from 'react'
 import profileImage from "../../Image/Profile.png";
 import HomeImage from "../../Image/HomePageImage.png";
@@ -61,7 +61,18 @@ export const Home = () => {
                       paddingTop={2}
                       display={{base:"none",lg:"block"}}
                       >{formatDate(currentDateTime)}</Text>
+                      <Tooltip
+                       label={(
+                        <>
+                          <div>John Doe</div> {/* Name */}
+                          <div>Email: john.doe@example.com</div> {/* Email */}
+                        </>
+                      )}
+                      
+                      >
+
                     <Image src={profileImage} borderRadius={"50%"} height={"50px"}></Image>
+                      </Tooltip>
                 </Box>
             </Box>
 
