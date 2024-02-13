@@ -4,8 +4,10 @@ import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
 import { Box, Button, Container, Image, Text, useBreakpointValue } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMicrophone, faCamera , faComment, faPhoneSlash, faCameraAlt } from "@fortawesome/free-solid-svg-icons";
+import { faMicrophone, faMicrophoneSlash, faCamera , faComment, faPhoneSlash, faCameraAlt } from "@fortawesome/free-solid-svg-icons";
 import { formatTime } from "../util/FormatTime";
+import { ReactComponent as Icon } from '../Image/cameraoff.svg';
+
 
 const RoomPage = () => {
   const socket = useSocket();
@@ -17,7 +19,8 @@ const RoomPage = () => {
   const [userDetails, setUserDetails] = useState({name: "",email: ""});
   
   const [openChat, setopenChat] = useState(false);
-  const [callButtonDisplay, setCallButtonDisplay] = useState(true)
+  const [callStarted, setCallStarted] = useState(false)
+  const [callAccepted, setCallAccepted] = useState(false)
   const [micOn,setMicOn]  = useState(true)
   const [cameraOn,setCameraOn]  = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -29,7 +32,7 @@ const RoomPage = () => {
   }, []);
 
   const handleCallUser = useCallback(async () => {
-    setCallButtonDisplay(false)
+    setCallStarted(true)
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: true,
@@ -55,6 +58,7 @@ const RoomPage = () => {
   );
 
   const sendStreams = useCallback(() => {
+    setCallAccepted(true)
     for (const track of myStream.getTracks()) {
       peer.peer.addTrack(track, myStream);
     }
@@ -290,7 +294,11 @@ const RoomPage = () => {
                 cursor:"pointer"
               }}
             >
-              <FontAwesomeIcon icon={faMicrophone} color="white" />
+              {
+                micOn ? 
+                <FontAwesomeIcon icon={faMicrophone} color="white" /> :
+              <FontAwesomeIcon icon={faMicrophoneSlash} color="white" />
+              }
             </Box>
 
             <Box
@@ -307,13 +315,18 @@ const RoomPage = () => {
                 cursor:"pointer"
               }}
             >
-              <FontAwesomeIcon icon={faCamera} color="white" />
 
+              {cameraOn ? 
+              
+              <FontAwesomeIcon icon={faCamera} color="white" /> :
+
+              <Icon/>
+            }
             </Box>
 
             <Box
               borderRadius={"50%"}
-              backgroundColor={"#2e2e2e"}
+              backgroundColor={openChat ? "white":"#2e2e2e"}
               height={"50px"}
               width={"50px"}
               display={"flex"}
@@ -325,7 +338,12 @@ const RoomPage = () => {
               }}
               onClick={() => setopenChat(!openChat)}
             >
-              <FontAwesomeIcon icon={faComment} color="white" />
+              <FontAwesomeIcon
+              
+              icon={faComment} 
+              color={openChat ? "black":"white"}
+              
+              />
             </Box>
 
             <Box
@@ -346,8 +364,10 @@ const RoomPage = () => {
           </Box>
 
           <Box flex={"1"}>
-            {myStream  && !isAdmin && <Button onClick={sendStreams}>Send Stream</Button>}
-            {remoteSocketId && isAdmin && <Button onClick={handleCallUser}>CALL</Button>}
+            {myStream  && !isAdmin && <Button onClick={sendStreams} display={callAccepted ? "none":"block"}>Send Stream</Button>}
+            {remoteSocketId && isAdmin &&
+             <Button onClick={handleCallUser} display={callStarted ? "none":"block"}>CALL</Button>
+            }
           </Box>
         </Box>
       </Box>
