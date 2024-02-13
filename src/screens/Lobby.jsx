@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../context/SocketProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 
 const LobbyScreen = () => {
   const [email, setEmail] = useState("");
@@ -54,7 +56,7 @@ const LobbyScreen = () => {
         />
         <br />
         <button>Join</button>
-      </form>
+        </form>
     </div>
   );
 };

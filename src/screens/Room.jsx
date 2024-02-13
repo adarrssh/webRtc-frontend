@@ -1,26 +1,35 @@
-import React, { useEffect, useCallback, useState } from "react";
+import React, { useEffect, useCallback, useState, useMemo } from "react";
 import ReactPlayer from "react-player";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
+import { Box, Button, Container, Image, Text, useBreakpointValue } from "@chakra-ui/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMicrophone, faCamera , faComment, faPhoneSlash, faCameraAlt } from "@fortawesome/free-solid-svg-icons";
+import { formatTime } from "../util/FormatTime";
 
 const RoomPage = () => {
   const socket = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
-  const [message, setMessage] = useState('');
-  const [userDetails, setUserDetails] = useState({
-    name: '',
-    email:'',
-  })
-
+  const [message, setMessage] = useState("broooo");
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [userDetails, setUserDetails] = useState({name: "",email: ""});
+  
+  const [openChat, setopenChat] = useState(false);
+  const [callButtonDisplay, setCallButtonDisplay] = useState(true)
+  const [micOn,setMicOn]  = useState(true)
+  const [cameraOn,setCameraOn]  = useState(true)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   const handleUserJoined = useCallback(({ email, id }) => {
+    setIsAdmin(true)
     console.log(`Email ${email} joined room`);
     setRemoteSocketId(id);
   }, []);
 
   const handleCallUser = useCallback(async () => {
+    setCallButtonDisplay(false)
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: true,
@@ -85,8 +94,8 @@ const RoomPage = () => {
   }, []);
 
   const handleIncomingMessage = (message) => {
-      console.log(message)
-  }
+    console.log(message);
+  };
 
   useEffect(() => {
     peer.peer.addEventListener("track", async (ev) => {
@@ -100,22 +109,27 @@ const RoomPage = () => {
     const videoTracks = myStream.getVideoTracks();
     if (videoTracks.length > 0) {
       const isEnabled = videoTracks[0].enabled;
-      videoTracks.forEach(track => {
+      videoTracks.forEach((track) => {
         track.enabled = !isEnabled;
       });
-      setMyStream(new MediaStream(myStream.getAudioTracks().concat(videoTracks)));
+      setMyStream(
+        new MediaStream(myStream.getAudioTracks().concat(videoTracks))
+      );
     }
-  }
-  
+
+    setCameraOn(!cameraOn)
+  };
+
   const toggleAudio = () => {
+
     const audioTrack = myStream.getAudioTracks()[0];
-  
+
     if (audioTrack) {
       audioTrack.enabled = !audioTrack.enabled;
       setMyStream(new MediaStream([myStream.getVideoTracks()[0], audioTrack]));
     }
+    setMicOn(!micOn)
   };
-  
 
   useEffect(() => {
     socket.on("user:joined", handleUserJoined);
@@ -123,7 +137,7 @@ const RoomPage = () => {
     socket.on("call:accepted", handleCallAccepted);
     socket.on("peer:nego:needed", handleNegoNeedIncomming);
     socket.on("peer:nego:final", handleNegoNeedFinal);
-    socket.on('incoming:message', handleIncomingMessage)
+    socket.on("incoming:message", handleIncomingMessage);
 
     return () => {
       socket.off("user:joined", handleUserJoined);
@@ -131,8 +145,7 @@ const RoomPage = () => {
       socket.off("call:accepted", handleCallAccepted);
       socket.off("peer:nego:needed", handleNegoNeedIncomming);
       socket.off("peer:nego:final", handleNegoNeedFinal);
-      socket.off('incoming:message', handleIncomingMessage)
-
+      socket.off("incoming:message", handleIncomingMessage);
     };
   }, [
     socket,
@@ -145,56 +158,225 @@ const RoomPage = () => {
 
   const sendMessage = () => {
     if (socket) {
-      socket.emit('send-message', { remoteSocketId, message });
-      setMessage(''); // Clear input after sending the message
+      socket.emit("send-message", { remoteSocketId, message });
+      console.log("clicked",{remoteSocketId,message})
+      setMessage(""); // Clear input after sending the message
     }
   };
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const newTime = new Date();
+      if (newTime.getTime() !== currentTime.getTime()) {
+        setCurrentTime(newTime);
+      }
+    }, 1000); // Update every second
+
+    return () => clearInterval(intervalId); // Cleanup interval on component unmount
+  }, [currentTime]);
+
+
+  const renderVideo = useMemo(
+    () => (
+      <Box>
+        <video
+          className="video"
+          autoPlay
+          playsInline
+          muted
+          height="100%"
+          width="100%"
+          ref={(videoRef) => videoRef && (videoRef.srcObject = myStream)}
+        />
+      </Box>
+    ),
+    [myStream]
+  );
+
+  const renderSendvideo = useMemo(
+    () => (
+      <Box>
+        <video
+          className="video"
+          autoPlay
+          playsInline
+          height="100%"
+          width="100%"
+          ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
+        />
+      </Box>
+    ),
+    [remoteStream]
+  );
+
   return (
-    <div>
-      <h1>Room Page</h1>
-      <h4>{remoteSocketId ? "Connected" : "No one in room"}</h4>
-      {myStream && <button onClick={sendStreams}  style={{ marginTop: '50px' }} >Send Stream</button>}
-      {remoteSocketId && <button onClick={handleCallUser}  style={{ marginTop: '50px' }} >CALL</button>}
-      {myStream && (
-        <>
-          <h1>My Stream</h1>
+    <Box
+      display={"flex"}
+      // flexDirection={"row"}
+      justifyContent={"center"}
+      height={"100vh"}
+      backgroundColor={"#121212"}
+      overflowX={"hidden"}
+    >
 
+      <Box
+      display={"flex"}
+      justifyContent={"center"}
+      maxWidth={"1500px"}
+      width={"100%"}
+      >
 
-      <input
-        type="text"
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send</button>
-          <video
-            autoPlay
-            playsInline
-            muted
-            height="300px"
-            width="200px"
-            ref={(videoRef) => videoRef && (videoRef.srcObject = myStream)}
-          />
-          <button onClick={toggleCamera}>toggle camera</button>
-          <button onClick={toggleAudio}>toggle mic</button>
-        </>
-      )}
-      {remoteStream && (
-        <>
-          <h1>Remote Stream</h1>
-          <video
-            autoPlay
-            playsInline
-            height="300px"
-            width="200px"
-            ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
-          />
+      <Box 
+      width={openChat? {base:"10%",sm:"40%", md:"60%",lg:"70%"}:"100%"}
+      transition="width 0.3s ease, transform 0.3s ease"
 
-        </>
-      )}
+      >
+        <Box
+          width={"100%"}
+          height={"90vh"}
+          display={"flex"}
+          flexDirection={"row"}
+        >
+          <Box
+            flex={"1"}
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            padding={1}
+          >
+            {myStream && renderVideo}
+          </Box>
+          <Box
+            flex={"1"}
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+            padding={1}
+          >
+            {remoteStream && renderSendvideo}
+          </Box>
+        </Box>
 
-    </div>
+        <Box display={"flex"} flexDirection={"row"}>
+          <Box
+            flex={"1"}
+            display={"flex"}
+            justifyContent={"flex-start"}
+            alignItems={"center"}
+            paddingLeft={10}
+          >
+            <Text color={"white"} display={{ base: "none", md: "block" }}>
+              {formatTime(currentTime)} | room id
+            </Text>
+          </Box>
+
+          <Box
+            flex={"1"}
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+          >
+            <Box
+              borderRadius={"50%"}
+              backgroundColor={micOn?"#2e2e2e":"#FF5449"}
+              // padding={"15px"}
+              height={"50px"}
+              width={"50px"}
+              display={"flex"}
+              justifyContent={"center"}
+              alignItems={"center"}
+              onClick={toggleAudio}
+              _hover={{
+                cursor:"pointer"
+              }}
+            >
+              <FontAwesomeIcon icon={faMicrophone} color="white" />
+            </Box>
+
+            <Box
+              borderRadius={"50%"}
+              backgroundColor={cameraOn?"#2e2e2e":"#FF5449"}
+              height={"50px"}
+              width={"50px"}
+              display={"flex"}
+              justifyContent={"center"}
+              alignItems={"center"}              
+              marginLeft={"10px"}
+              onClick={toggleCamera}
+              _hover={{
+                cursor:"pointer"
+              }}
+            >
+              <FontAwesomeIcon icon={faCamera} color="white" />
+
+            </Box>
+
+            <Box
+              borderRadius={"50%"}
+              backgroundColor={"#2e2e2e"}
+              height={"50px"}
+              width={"50px"}
+              display={"flex"}
+              justifyContent={"center"}
+              alignItems={"center"}        
+              marginLeft={"10px"}
+              _hover={{
+                cursor:"pointer"
+              }}
+              onClick={() => setopenChat(!openChat)}
+            >
+              <FontAwesomeIcon icon={faComment} color="white" />
+            </Box>
+
+            <Box
+              borderRadius={"50%"}
+              backgroundColor={"#FF5449"}
+              height={"45px"}
+              width={"48px"}
+              display={"flex"}
+              justifyContent={"center"}
+              alignItems={"center"}
+              marginLeft={"10px"}
+              _hover={{
+                cursor:"pointer"
+              }}
+            >
+              <FontAwesomeIcon icon={faPhoneSlash} color="white" />
+            </Box>
+          </Box>
+
+          <Box flex={"1"}>
+            {myStream  && !isAdmin && <Button onClick={sendStreams}>Send Stream</Button>}
+            {remoteSocketId && isAdmin && <Button onClick={handleCallUser}>CALL</Button>}
+          </Box>
+        </Box>
+      </Box>
+        <Box
+        backgroundColor={"#2e2e2e"}
+        // width={openChat?"30%":"0"}
+        width={openChat? {base:"90%",sm:"60%", md:"40%",lg:"30%"}:"0"}
+
+          transition="width 0.3s ease, transform 0.3s ease"
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          
+        >
+          <Box
+          backgroundColor={"white"}
+          height={"80%"}
+          width={"80%"}
+          borderRadius={"2rem"}
+          >
+            <Button onClick={sendMessage}>Send</Button>
+
+          </Box>
+        </Box>
+              
+        </Box>
+    </Box>
   );
 };
 
 export default RoomPage;
+
