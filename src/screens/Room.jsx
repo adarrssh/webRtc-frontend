@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, useMemo } from "react";
+import React, { useEffect, useCallback, useState, useMemo, useRef } from "react";
 import ReactPlayer from "react-player";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
@@ -15,9 +15,10 @@ const RoomPage = () => {
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
-  const [message, setMessage] = useState("broooo");
+  const [message, setMessage] = useState("");
+  const [chats, setChats] = useState([])
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [userDetails, setUserDetails] = useState({name: "",email: ""});
+  const [userDetails, setUserDetails] = useState({name: "Adarsh",email: ""});
   
   const [openChat, setopenChat] = useState(false);
   const [callStarted, setCallStarted] = useState(false)
@@ -25,6 +26,17 @@ const RoomPage = () => {
   const [micOn,setMicOn]  = useState(true)
   const [cameraOn,setCameraOn]  = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const messageEl = useRef(null)
+
+
+  useEffect(()=>{
+    if(messageEl){
+      messageEl.current.addEventListener('DOMNodeInserted', event => {
+        const {currentTarget: target} = event
+        target.scroll({top:target.scrollHeight})
+      })
+    }
+  },[])
 
   const handleUserJoined = useCallback(({ email, id }) => {
     setIsAdmin(true)
@@ -98,8 +110,9 @@ const RoomPage = () => {
     await peer.setLocalDescription(ans);
   }, []);
 
-  const handleIncomingMessage = (message) => {
-    console.log(message);
+  const handleIncomingMessage = ({name,message}) => {
+    console.log({name,message})
+    setChats([...chats,{name:userDetails.name,message}])
   };
 
   useEffect(() => {
@@ -159,16 +172,23 @@ const RoomPage = () => {
     handleCallAccepted,
     handleNegoNeedIncomming,
     handleNegoNeedFinal,
+    handleIncomingMessage
   ]);
 
-  const sendMessage = () => {
+  const sendMessage = (event) => {
+    if (event.key === 'Enter') {
+
     if (socket) {
-      socket.emit("send-message", { remoteSocketId, message });
-      console.log("clicked",{remoteSocketId,message})
+      setChats([...chats,{name:userDetails.name,message}])
+      socket.emit("send-message", { remoteSocketId,name:userDetails.name, message });
       setMessage(""); // Clear input after sending the message
     }
+  }
   };
 
+  useEffect(()=>{
+    console.log(chats)
+  },[chats])
   useEffect(() => {
     const intervalId = setInterval(() => {
       const newTime = new Date();
@@ -417,6 +437,7 @@ const RoomPage = () => {
               </Button>
             </Box>
             <Box
+              ref={messageEl}
                 width={"100%"}
                 height={"80%"}
                 padding={4}
@@ -430,10 +451,11 @@ const RoomPage = () => {
                   scrollbarWidth: "none" 
                 }}
             >
-               <SingleChat/>
-               <SingleChat/>
-               <SingleChat/>
-               <SingleChat/>
+               {chats.map((chat,key)=>
+                <>
+                 <SingleChat key={key} name={chat.name} message={chat.message}/>
+                </>
+               )}
             </Box>
             <Box
                 width={"100%"}
@@ -463,6 +485,9 @@ const RoomPage = () => {
                 width={"90%"}
                 height={"100%"}
                 focusBorderColor="transparent"
+                value={message}
+                onChange={(event)=> setMessage(event.target.value)}
+                onKeyDown={sendMessage}
                 />
                 <Button
                 height={"100%"}
@@ -486,24 +511,3 @@ const RoomPage = () => {
 };
 
 export default RoomPage;
-
-{/* <Box
-height={"100%"}
-width={"100%"}
-// backgroundColor={"lightgray"}
-display={"flex"}
-flexDir={"row"}
-justifyContent={"center"}
-
->
-
-<Input 
-placeholder="send message"
-focusBorderColor="grey"
-borderStartRadius={"1rem"}
-borderEndRadius={"1rem"}
-width={"90%"}
-/>
-
-<FontAwesomeIcon icon={faPaperPlane}/>
-</Box> */}

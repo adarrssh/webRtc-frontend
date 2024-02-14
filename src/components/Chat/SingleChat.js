@@ -1,7 +1,7 @@
 import { Box, Text } from '@chakra-ui/react'
 import React from 'react'
 
-const SingleChat = () => {
+const SingleChat = ({name,message}) => {
   return (
     <Box 
     display={"flex"}
@@ -11,8 +11,8 @@ const SingleChat = () => {
     color={"black"}
     paddingBottom={"10px"}
     >
-        <Text fontWeight={"bold"}> Adarsh </Text>
-        <Text> Hey </Text>
+        <Text fontWeight={"bold"}> {name} </Text>
+        <Text> {message} </Text>
     </Box>
   )
 }
