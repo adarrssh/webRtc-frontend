@@ -13,16 +13,16 @@ const Authentication = () => {
       marginTop={"10rem"}
       maxWidth={"700px"}
       width={"100%"}
-       backgroundColor={"blue"} 
-       color={"black"} bg={"white"} 
+       color={"black"}
+        bg={"white"} 
        p={4}
         borderRadius={"lg"}
          borderWidth={"1px"}
          >
       <Tabs isFitted variant="soft-rounded">
           <TabList mb="1em">
-            <Tab  width={"50%"} color={"black"}>Login</Tab>
-            <Tab width={"50%"} color={"black"} >Sign Up</Tab>
+            <Tab  width={"50%"} color={"black"} _selected={{backgroundColor:"#7bcc7b",color:"white"}}>Login</Tab>
+            <Tab width={"50%"} color={"black"} _selected={{backgroundColor:"#7bcc7b",color:"white"}} >Sign Up</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>

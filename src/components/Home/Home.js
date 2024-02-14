@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Image, Input, Text, Tooltip } from '@chakra-ui/react'
+import { Box, Button, Container, Flex, Image, Input, Menu, MenuButton, MenuItem, MenuList, Text, Tooltip } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useState } from 'react'
 import profileImage from "../../Image/Profile.png";
 import HomeImage from "../../Image/HomePageImage.png";
@@ -8,39 +8,53 @@ import { v4 as uuid } from "uuid";
 import { useNavigate } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import { useSocket } from '../../context/SocketProvider';
+import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons'
+
 
 
 export const Home = () => {
-    const {socket,userDetails,setUserDetails} = useSocket();
+    const { socket, userDetails, setUserDetails , isAdmin, setIsAdmin } = useSocket();
     const [currentDateTime, setCurrentDateTime] = useState(new Date());
-    const [roomId,setRoomId] = useState("")
-    const uniqueRoomId = (uuid()).slice(0,8);
+    const [roomId, setRoomId] = useState("")
+    const uniqueRoomId = (uuid()).slice(0, 8);
     const navigate = useNavigate()
 
     const createNewMeeting = () => {
-        socket.emit("room:join",{email:userDetails.email, room : uniqueRoomId})
+        if (localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")) {
+            setIsAdmin(true)
+            socket.emit("room:join", { email: userDetails.email, room: uniqueRoomId })
+        } else {
+            navigate("/login")
+        }
+
+
     }
 
     const joinExistingRoom = () => {
-        if(roomId.length){
-            socket.emit("room:join",{email:userDetails.email, room : roomId})
+        if (localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")) {
+            if (roomId.length) {
+                socket.emit("room:join", { email: userDetails.email, room: roomId })
+            }
+        } else {
+            navigate("/login")
+
         }
     }
 
     const handleJoinRoom = useCallback(
         (data) => {
-          const { email, room } = data;
-          navigate(`/room/${room}`);
+            const { email, room } = data;
+            navigate(`/room/${room}`);
         },
         [navigate]
-      );
+    );
 
     useEffect(() => {
         socket.on("room:join", handleJoinRoom);
         return () => {
-          socket.off("room:join", handleJoinRoom);
+            socket.off("room:join", handleJoinRoom);
         };
-      }, [socket, handleJoinRoom]);
+    }, [socket, handleJoinRoom]);
 
 
     useEffect(() => {
@@ -68,6 +82,12 @@ export const Home = () => {
         return modifiedFormattedDate;
     };
 
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('email');
+        localStorage.removeItem('username');
+        navigate('/login')
+    }
     return (
         <Container centerContent maxWidth={"1500px"} height={"100vh"}>
             <Box
@@ -84,7 +104,7 @@ export const Home = () => {
                     fontWeight={"bold"}
                     fontSize={{ base: "1.5rem", sm: "2rem" }}
                 >
-                    Meet Cute
+                    Meetify
                 </Box>
                 <Box
                     paddingTop={4}
@@ -98,18 +118,24 @@ export const Home = () => {
                         paddingTop={2}
                         display={{ base: "none", lg: "block" }}
                     >{formatDate(currentDateTime)}</Text>
-                    <Tooltip
-                        label={(
-                            <>
-                                <div>John Doe</div> {/* Name */}
-                                <div>Email: john.doe@example.com</div> {/* Email */}
-                            </>
-                        )}
+                    {
+                        localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username") ?
 
-                    >
+                            <Menu>
+                                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} backgroundColor={"white"}
+                                    _hover={{ backgroundColor: "white" }}
+                                >
+                                    <Image src={profileImage} borderRadius={"50%"} height={"30px"}></Image>
+                                </MenuButton>
+                                <MenuList _hover={{ backgroundColor: "white" }} backgroundColor={"white"}>
+                                    <MenuItem>{localStorage.getItem("email")}</MenuItem>
+                                    <MenuItem onClick={logout}>Logout</MenuItem>
+                                </MenuList>
+                            </Menu>
+                            :
+                            <Image src={profileImage} borderRadius={"50%"} height={"50px"}></Image>
 
-                        <Image src={profileImage} borderRadius={"50%"} height={"50px"}></Image>
-                    </Tooltip>
+                    }
                 </Box>
             </Box>
 
@@ -119,7 +145,6 @@ export const Home = () => {
                 display={"flex"}
                 flexDir={"row"}
                 marginTop={"10vh"}
-                // backgroundColor={"red"}
                 justifyContent={"center"}
 
             >
@@ -131,15 +156,12 @@ export const Home = () => {
                     flex={2}
                     width={"100%"}
                     paddingRight={5}
-                    // backgroundColor={"blue"}
                     display={"flex"}
                     flexDir={"column"}
                     justifyContent={"center"}
-                // textAlign={"center"}
                 >
                     <Box
                         textAlign={{ base: "center", lg: "left" }}
-                    // backgroundColor={"yellow"}
                     >
 
 
@@ -165,9 +187,11 @@ export const Home = () => {
                             display={{ base: "flex" }}
                             justifyContent={{ base: "flex-start" }}
                             onClick={createNewMeeting}
+                            minWidth={"fit-content"}
                         >
-                            <Image src={Video} />
-                            <Text paddingLeft={"1rem"}>
+                            <Image display={{ base: "none", md: "block" }} src={Video} />
+                            <Text paddingLeft={"1rem"} paddingRight={"1rem"}
+                            >
                                 New Meeting
                             </Text>
                         </Button>
@@ -175,44 +199,47 @@ export const Home = () => {
                         <Button
                             marginLeft={{ sm: "1rem" }}
                             marginTop={{ base: "1rem", sm: "0" }}
+
                             padding={"1.5rem"}
                             border={"1px"}
                             borderColor={"#54B435"}
                             backgroundColor={"white"}
                             color={"black"}
-                            _hover={{ backgroundColor: "none" }}
+                            _hover={{ backgroundColor: "white" }}
+                            _o
                         >
                             <Image
                                 src={Keyboard}
                                 color={"black"}
+                                display={{ base: "none", md: "block" }}
                             />
 
                             <Input
-
+                                width={"100%"}
                                 paddingLeft={"10px"}
                                 border={"none"}
-                                placeholder={'Enter a code'}
+                                placeholder={'Enter a meeting code'}
                                 backgroundColor={"none"}
                                 _focusVisible={{
                                     outline: "none",
-                                    backgroundColor: "none"
+                                    backgroundColor: "white"
                                 }}
                                 value={roomId}
-                                onChange={(e)=>setRoomId(e.target.value)}
+                                onChange={(e) => setRoomId(e.target.value)}
                             />
 
 
                         </Button>
-                        {roomId ? <Button 
-                        
-                        marginLeft={"1rem"}
-                        padding={"1.5rem"}
-                        color={"white"}
-                        backgroundColor={"#54B435"}
-                        border={"1px"}
-                        borderColor={"#54B435"}
-                        _hover={{backgroundColor:"none"}}
-                        onClick={joinExistingRoom}
+                        {roomId ? <Button
+
+                            marginLeft={"1rem"}
+                            padding={"1.5rem"}
+                            color={"white"}
+                            backgroundColor={"#54B435"}
+                            border={"1px"}
+                            borderColor={"#54B435"}
+                            _hover={{ backgroundColor: "none" }}
+                            onClick={joinExistingRoom}
                         >Join</Button> : <></>}
 
 
@@ -229,12 +256,6 @@ export const Home = () => {
                     <Image src={HomeImage}></Image>
                 </Box>
             </Box>
-            {/* <Box
-            backgroundColor={"purple"}
-            width={{base:"100%",sm:"100%",md:"50%",lg:"90%"}}
-            >
-                hey
-            </Box> */}
         </Container>
     )
 }

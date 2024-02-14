@@ -9,12 +9,12 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = (props) => {
-  const socket = useMemo(() => io("https://one-to-one-video-service.onrender.com"), []);
-
-  const [userDetails, setUserDetails] = useState({name:"Adarsh",email:"adarsh00502@gmail.com"})
+  const socket = useMemo(() => io(`${process.env.REACT_APP_BASE_URL}`), []);
+  const [userDetails, setUserDetails] = useState({name:localStorage.getItem("username"),email:localStorage.getItem("email")})
+  const [isAdmin, setIsAdmin] = useState(false)
 
   return (
-    <SocketContext.Provider value={{socket, userDetails, setUserDetails}}>
+    <SocketContext.Provider value={{socket, userDetails, setUserDetails, isAdmin, setIsAdmin}}>
       {props.children}
     </SocketContext.Provider>
   );

@@ -10,74 +10,14 @@ const Signup = () => {
 
     const [name, setName] = useState();
     const [email, setEmail] = useState();
-    const [confirmpassword, setConfirmpassword] = useState();
     const [password, setPassword] = useState();
-    const [pic, setPic] = useState();
-    const [picLoading, setPicLoading] = useState(false);
     const toast = useToast()
     const navigate = useNavigate()
 
-    const postDetails = (pics) => {
-        setPicLoading(true);
-        if (pics === undefined) {
-            toast({
-                title: "Please Select an Image!",
-                status: "warning",
-                duration: 5000,
-                isClosable: true,
-                position: "bottom",
-            });
-            return;
-        }
-        if (pics.type === "image/jpeg" || pics.type === "image/png") {
-            const data = new FormData();
-            data.append("file", pics);
-            data.append("upload_preset", "chat-app");
-            data.append("cloud_name", "piyushproj");
-            fetch( "https://api.cloudinary.com/v1_1/dbj1u9os7/image/upload"
-                // "https://api.cloudinary.com/v1_1/piyushproj/image/upload"
-                , {
-                method: "post",
-                body: data,
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    setPic(data.url.toString());
-                    setPicLoading(false);
-                })
-                .catch((err) => {
-                    console.error(err);
-                    setPicLoading(false);
-                });
-        } else {
-            toast({
-                title: "Please Select an Image!",
-                status: "warning",
-                duration: 5000,
-                isClosable: true,
-                position: "bottom",
-            });
-            setPicLoading(false);
-            return;
-        }
-    };
-
     const submitHandler = async () => {
-        setPicLoading(true);
-        if (!name || !email || !password || !confirmpassword) {
+        if (!name || !email || !password) {
             toast({
                 title: "Please Fill all the Feilds",
-                status: "warning",
-                duration: 5000,
-                isClosable: true,
-                position: "bottom",
-            });
-            setPicLoading(false);
-            return;
-        }
-        if (password !== confirmpassword) {
-            toast({
-                title: "Passwords Do Not Match",
                 status: "warning",
                 duration: 5000,
                 isClosable: true,
@@ -92,15 +32,19 @@ const Signup = () => {
                 },
             };
             const { data } = await axios.post(
-                `${process.env.REACT_APP_BASE_API_URL}/api/user`,
+                `${process.env.REACT_APP_BASE_UR}/auth/signup`,
                 {
                     name,
                     email,
-                    password,
-                    pic,
+                    password
                 },
                 config
             );
+
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('email', data.email);
+            localStorage.setItem('username', data.username);
+
             toast({
                 title: "Registration Successful",
                 status: "success",
@@ -108,19 +52,17 @@ const Signup = () => {
                 isClosable: true,
                 position: "bottom",
             });
-            localStorage.setItem("userInfo", JSON.stringify(data));
-            setPicLoading(false);
-            navigate('/chats')
+            navigate('/')
         } catch (error) {
+            console.error(error)
             toast({
                 title: "Error Occured!",
-                description: error.response.data.message,
+                description: `${error.response.data.error}`,
                 status: "error",
                 duration: 5000,
                 isClosable: true,
                 position: "bottom",
             });
-            setPicLoading(false);
         }
     };
 
@@ -131,7 +73,7 @@ const Signup = () => {
                 <Input
                     placeholder="Enter You Name"
                     onChange={(e) => setName(e.target.value)}
-                    focusBorderColor='#6f4fb3'
+                    focusBorderColor='#7bcc7b'
 
                 />
             </FormControl>
@@ -140,7 +82,7 @@ const Signup = () => {
                 <Input
                     placeholder="Enter You Email"
                     onChange={(e) => setEmail(e.target.value)}
-                    focusBorderColor='#6f4fb3'
+                    focusBorderColor='#7bcc7b'
 
                 />
             </FormControl>
@@ -151,7 +93,7 @@ const Signup = () => {
                         type={show ? 'text' : 'password'}
                         placeholder="Enter You password"
                         onChange={(e) => setPassword(e.target.value)}
-                        focusBorderColor='#6f4fb3'
+                        focusBorderColor='#7bcc7b'
 
                     />
                     <InputRightElement width="4.5rem">
@@ -162,13 +104,12 @@ const Signup = () => {
                 </InputGroup>
             </FormControl>
             <Button
-                backgroundColor={'#6f4fb3'}
+                backgroundColor="#7bcc7b"
                 color={'white'}
                 width="100%"
                 style={{ marginTop: 15 }}
                 onClick={submitHandler}
-                isLoading={picLoading}
-                _hover={{bg:'white', color:'#6f4fb3', border : '1px', borderColor:'#6f4fb3'}}
+                _hover={{bg:'white', color:'#7bcc7b', border : '1px', borderColor:'#7bcc7b'}}
 
             >
                 Sign Up
