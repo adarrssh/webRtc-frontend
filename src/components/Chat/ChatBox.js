@@ -130,7 +130,7 @@ const ChatBox = ({openChat,setopenChat,chats, setMessage, sendMessage,message}) 
               backgroundColor: "#ececec",
             }}
           >
-            <FontAwesomeIcon icon={faPaperPlane} />
+            {/* <FontAwesomeIcon icon={faPaperPlane} /> */}
           </Button>
         </Box>
       </Box>
