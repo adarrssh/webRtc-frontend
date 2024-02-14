@@ -274,36 +274,71 @@ export const RoomPage = () => {
             ) : (
               <>
 
-                {isAdmin && (remoteSocketId === null) && !callStarted && 
-                (
-                  <Text color={"white"}>No one is in the room</Text>
-                )
+                {isAdmin && (remoteSocketId === null) && !callStarted &&
+                  (
+                    <Box
+                     width={"100%"}
+                     display={"flex"}
+                     justifyContent={"center"}
+                     alignItems={"center"}
+                    >
+
+                    <Text color={"white"}  fontWeight={"bold"} >Please wait while the other user joins....</Text>
+                    </Box>
+                  )
                 }
 
-                {isAdmin && remoteSocketId && !callStarted && (
-                  <Button
-                    onClick={handleCallUser}
-                    display={callStarted ? "none" : "block"}
-                  >
-                    CALL
-                  </Button>
-                )}
-                
+                {isAdmin && remoteSocketId && !callStarted &&
+                  (
+                    <Box
+                    width={"100%"}
+                    display={"flex"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    >
 
-                {!isAdmin && !callAccepted && !remoteStream && 
-                (
-                  <Text color={"white"}>Waiting for the admin call</Text>
-                )
+                    <Button
+                      onClick={handleCallUser}
+                      display={callStarted ? "none" : "block"}
+                      >
+                      Start the CALL
+                    </Button>
+                      </Box>
+                  )
                 }
 
-                {myStream && !isAdmin && (
-                  <Button
-                    onClick={sendStreams}
-                    display={callAccepted ? "none" : "block"}
-                  >
-                    Send Stream
-                  </Button>
-                )}
+
+                {!isAdmin && !callAccepted && !remoteStream &&
+                  (
+                    <Box
+                     width={"100%"}
+                     display={"flex"}
+                     justifyContent={"center"}
+                     alignItems={"center"}
+                    >
+
+                    <Text color={"white"} fontWeight={"bold"}>Your call will start once the admin starts the call</Text>
+                    </Box>                  )
+                }
+
+                {myStream && !isAdmin &&
+                  (
+                    <Box
+                    width={"100%"}
+                    display={"flex"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                    >
+
+                    <Button
+                      onClick={sendStreams}
+                      display={callAccepted ? "none" : "block"}
+                      >
+                      Click here to Accept the Call
+                    </Button>
+                      </Box>
+                  )
+                }
               </>
             )}
           </Box>
