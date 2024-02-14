@@ -9,8 +9,7 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = (props) => {
-  const socket = useMemo(() => io("http://localhost:8000"), []);
-
+  const socket = useMemo(() => io(`${process.env.REACT_APP_BASE_URL}`), []);
   const [userDetails, setUserDetails] = useState({name:localStorage.getItem("username"),email:localStorage.getItem("email")})
   const [isAdmin, setIsAdmin] = useState(false)
 

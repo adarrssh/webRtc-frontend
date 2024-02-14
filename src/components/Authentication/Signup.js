@@ -32,7 +32,7 @@ const Signup = () => {
                 },
             };
             const { data } = await axios.post(
-                `http://localhost:8000/auth/signup`,
+                `${process.env.REACT_APP_BASE_UR}/auth/signup`,
                 {
                     name,
                     email,
