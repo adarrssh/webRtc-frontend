@@ -2,11 +2,12 @@ import React, { useEffect, useCallback, useState, useMemo } from "react";
 import ReactPlayer from "react-player";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
-import { Box, Button, Container, Image, Text, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Button, Container, Image, Input, Text, useBreakpointValue } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMicrophone, faMicrophoneSlash, faCamera , faComment, faPhoneSlash, faCameraAlt } from "@fortawesome/free-solid-svg-icons";
+import { faMicrophone, faMicrophoneSlash, faCamera , faComment, faPhoneSlash, faCameraAlt, faXmark, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { formatTime } from "../util/FormatTime";
 import { ReactComponent as Icon } from '../Image/cameraoff.svg';
+import SingleChat from "../components/Chat/SingleChat";
 
 
 const RoomPage = () => {
@@ -372,8 +373,8 @@ const RoomPage = () => {
         </Box>
       </Box>
         <Box
-        backgroundColor={"#2e2e2e"}
-        // width={openChat?"30%":"0"}
+      backgroundColor={"#121212"}
+      // width={openChat?"30%":"0"}
         width={openChat? {base:"90%",sm:"60%", md:"40%",lg:"30%"}:"0"}
 
           transition="width 0.3s ease, transform 0.3s ease"
@@ -383,12 +384,98 @@ const RoomPage = () => {
           
         >
           <Box
+          display={"flex"}
+          flexDirection={"column"}
           backgroundColor={"white"}
           height={"80%"}
           width={"80%"}
-          borderRadius={"2rem"}
+          borderRadius={"1rem"}
           >
-            <Button onClick={sendMessage}>Send</Button>
+
+
+            <Box
+             width={"100%"}
+             height={"10%"}
+            //  backgroundColor={"red"}
+             borderTopRadius={"1rem"}
+             display={"flex"}
+             flexDir={"row"}
+             justifyContent={"space-between"}
+             alignItems={"center"}
+            >
+              <Text paddingLeft={4}>In call Messages</Text>
+              <Button 
+              onClick={()=>setopenChat(false)}
+              paddingRight={4} 
+              backgroundColor={"white"}
+              _hover={{
+                backgroundColor:"white"
+              }}
+              >
+
+              <FontAwesomeIcon  icon={faXmark}/>
+              </Button>
+            </Box>
+            <Box
+                width={"100%"}
+                height={"80%"}
+                padding={4}
+                overflowY={"auto"}
+                sx={{
+              
+                  "&::-webkit-scrollbar": {
+                    display: "none"
+                  },
+                  msOverflowStyle: "none", 
+                  scrollbarWidth: "none" 
+                }}
+            >
+               <SingleChat/>
+               <SingleChat/>
+               <SingleChat/>
+               <SingleChat/>
+            </Box>
+            <Box
+                width={"100%"}
+                height={"10%"}
+                borderBottomRadius={"1rem"}
+                display={"flex"}
+                flexDirection={"row"}
+                justifyContent={"center"}
+                alignItems={"center"}
+            >
+
+              <Box 
+              backgroundColor={"#ececec"}
+              borderRadius={"1rem"}
+              width={"95%"}
+              height={"60%"}
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              >
+                
+              <Input 
+              border={"0px"}
+                placeholder="send message"
+                borderStartRadius={"1rem"}
+                borderEndRadius={"1rem"}
+                width={"90%"}
+                height={"100%"}
+                focusBorderColor="transparent"
+                />
+                <Button
+                height={"100%"}
+                borderEndRadius={"1rem"}
+                backgroundColor={"#ececec"}
+                _hover={{
+                  backgroundColor:"#ececec"
+                }}
+                >
+                <FontAwesomeIcon icon={faPaperPlane}/>
+                </Button>
+              </Box>
+            </Box>
 
           </Box>
         </Box>
@@ -400,3 +487,23 @@ const RoomPage = () => {
 
 export default RoomPage;
 
+{/* <Box
+height={"100%"}
+width={"100%"}
+// backgroundColor={"lightgray"}
+display={"flex"}
+flexDir={"row"}
+justifyContent={"center"}
+
+>
+
+<Input 
+placeholder="send message"
+focusBorderColor="grey"
+borderStartRadius={"1rem"}
+borderEndRadius={"1rem"}
+width={"90%"}
+/>
+
+<FontAwesomeIcon icon={faPaperPlane}/>
+</Box> */}
