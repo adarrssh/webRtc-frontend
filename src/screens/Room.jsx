@@ -1,26 +1,42 @@
-import React, { useEffect, useCallback, useState, useMemo } from "react";
+import React, { useEffect, useCallback, useState, useMemo, useRef } from "react";
 import ReactPlayer from "react-player";
 import peer from "../service/peer";
 import { useSocket } from "../context/SocketProvider";
-import { Box, Button, Container, Image, Text, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Button, Container, Image, Input, Text, useBreakpointValue } from "@chakra-ui/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMicrophone, faCamera , faComment, faPhoneSlash, faCameraAlt } from "@fortawesome/free-solid-svg-icons";
+import { faMicrophone, faMicrophoneSlash, faCamera , faComment, faPhoneSlash, faCameraAlt, faXmark, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { formatTime } from "../util/FormatTime";
+import { ReactComponent as Icon } from '../Image/cameraoff.svg';
+import SingleChat from "../components/Chat/SingleChat";
+
 
 const RoomPage = () => {
   const socket = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
-  const [message, setMessage] = useState("broooo");
+  const [message, setMessage] = useState("");
+  const [chats, setChats] = useState([])
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [userDetails, setUserDetails] = useState({name: "",email: ""});
+  const [userDetails, setUserDetails] = useState({name: "Adarsh",email: ""});
   
   const [openChat, setopenChat] = useState(false);
-  const [callButtonDisplay, setCallButtonDisplay] = useState(true)
+  const [callStarted, setCallStarted] = useState(false)
+  const [callAccepted, setCallAccepted] = useState(false)
   const [micOn,setMicOn]  = useState(true)
   const [cameraOn,setCameraOn]  = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
+  const messageEl = useRef(null)
+
+
+  useEffect(()=>{
+    if(messageEl){
+      messageEl.current.addEventListener('DOMNodeInserted', event => {
+        const {currentTarget: target} = event
+        target.scroll({top:target.scrollHeight})
+      })
+    }
+  },[])
 
   const handleUserJoined = useCallback(({ email, id }) => {
     setIsAdmin(true)
@@ -29,7 +45,7 @@ const RoomPage = () => {
   }, []);
 
   const handleCallUser = useCallback(async () => {
-    setCallButtonDisplay(false)
+    setCallStarted(true)
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: true,
@@ -55,6 +71,7 @@ const RoomPage = () => {
   );
 
   const sendStreams = useCallback(() => {
+    setCallAccepted(true)
     for (const track of myStream.getTracks()) {
       peer.peer.addTrack(track, myStream);
     }
@@ -93,8 +110,9 @@ const RoomPage = () => {
     await peer.setLocalDescription(ans);
   }, []);
 
-  const handleIncomingMessage = (message) => {
-    console.log(message);
+  const handleIncomingMessage = ({name,message}) => {
+    console.log({name,message})
+    setChats([...chats,{name:userDetails.name,message}])
   };
 
   useEffect(() => {
@@ -154,16 +172,23 @@ const RoomPage = () => {
     handleCallAccepted,
     handleNegoNeedIncomming,
     handleNegoNeedFinal,
+    handleIncomingMessage
   ]);
 
-  const sendMessage = () => {
+  const sendMessage = (event) => {
+    if (event.key === 'Enter') {
+
     if (socket) {
-      socket.emit("send-message", { remoteSocketId, message });
-      console.log("clicked",{remoteSocketId,message})
+      setChats([...chats,{name:userDetails.name,message}])
+      socket.emit("send-message", { remoteSocketId,name:userDetails.name, message });
       setMessage(""); // Clear input after sending the message
     }
+  }
   };
 
+  useEffect(()=>{
+    console.log(chats)
+  },[chats])
   useEffect(() => {
     const intervalId = setInterval(() => {
       const newTime = new Date();
@@ -290,7 +315,11 @@ const RoomPage = () => {
                 cursor:"pointer"
               }}
             >
-              <FontAwesomeIcon icon={faMicrophone} color="white" />
+              {
+                micOn ? 
+                <FontAwesomeIcon icon={faMicrophone} color="white" /> :
+              <FontAwesomeIcon icon={faMicrophoneSlash} color="white" />
+              }
             </Box>
 
             <Box
@@ -307,13 +336,18 @@ const RoomPage = () => {
                 cursor:"pointer"
               }}
             >
-              <FontAwesomeIcon icon={faCamera} color="white" />
 
+              {cameraOn ? 
+              
+              <FontAwesomeIcon icon={faCamera} color="white" /> :
+
+              <Icon/>
+            }
             </Box>
 
             <Box
               borderRadius={"50%"}
-              backgroundColor={"#2e2e2e"}
+              backgroundColor={openChat ? "white":"#2e2e2e"}
               height={"50px"}
               width={"50px"}
               display={"flex"}
@@ -325,7 +359,12 @@ const RoomPage = () => {
               }}
               onClick={() => setopenChat(!openChat)}
             >
-              <FontAwesomeIcon icon={faComment} color="white" />
+              <FontAwesomeIcon
+              
+              icon={faComment} 
+              color={openChat ? "black":"white"}
+              
+              />
             </Box>
 
             <Box
@@ -346,14 +385,16 @@ const RoomPage = () => {
           </Box>
 
           <Box flex={"1"}>
-            {myStream  && !isAdmin && <Button onClick={sendStreams}>Send Stream</Button>}
-            {remoteSocketId && isAdmin && <Button onClick={handleCallUser}>CALL</Button>}
+            {myStream  && !isAdmin && <Button onClick={sendStreams} display={callAccepted ? "none":"block"}>Send Stream</Button>}
+            {remoteSocketId && isAdmin &&
+             <Button onClick={handleCallUser} display={callStarted ? "none":"block"}>CALL</Button>
+            }
           </Box>
         </Box>
       </Box>
         <Box
-        backgroundColor={"#2e2e2e"}
-        // width={openChat?"30%":"0"}
+      backgroundColor={"#121212"}
+      // width={openChat?"30%":"0"}
         width={openChat? {base:"90%",sm:"60%", md:"40%",lg:"30%"}:"0"}
 
           transition="width 0.3s ease, transform 0.3s ease"
@@ -363,12 +404,103 @@ const RoomPage = () => {
           
         >
           <Box
+          display={"flex"}
+          flexDirection={"column"}
           backgroundColor={"white"}
           height={"80%"}
           width={"80%"}
-          borderRadius={"2rem"}
+          borderRadius={"1rem"}
           >
-            <Button onClick={sendMessage}>Send</Button>
+
+
+            <Box
+             width={"100%"}
+             height={"10%"}
+            //  backgroundColor={"red"}
+             borderTopRadius={"1rem"}
+             display={"flex"}
+             flexDir={"row"}
+             justifyContent={"space-between"}
+             alignItems={"center"}
+            >
+              <Text paddingLeft={4}>In call Messages</Text>
+              <Button 
+              onClick={()=>setopenChat(false)}
+              paddingRight={4} 
+              backgroundColor={"white"}
+              _hover={{
+                backgroundColor:"white"
+              }}
+              >
+
+              <FontAwesomeIcon  icon={faXmark}/>
+              </Button>
+            </Box>
+            <Box
+              ref={messageEl}
+                width={"100%"}
+                height={"80%"}
+                padding={4}
+                overflowY={"auto"}
+                sx={{
+              
+                  "&::-webkit-scrollbar": {
+                    display: "none"
+                  },
+                  msOverflowStyle: "none", 
+                  scrollbarWidth: "none" 
+                }}
+            >
+               {chats.map((chat,key)=>
+                <>
+                 <SingleChat key={key} name={chat.name} message={chat.message}/>
+                </>
+               )}
+            </Box>
+            <Box
+                width={"100%"}
+                height={"10%"}
+                borderBottomRadius={"1rem"}
+                display={"flex"}
+                flexDirection={"row"}
+                justifyContent={"center"}
+                alignItems={"center"}
+            >
+
+              <Box 
+              backgroundColor={"#ececec"}
+              borderRadius={"1rem"}
+              width={"95%"}
+              height={"60%"}
+              display={"flex"}
+              flexDirection={"row"}
+              alignItems={"center"}
+              >
+                
+              <Input 
+              border={"0px"}
+                placeholder="send message"
+                borderStartRadius={"1rem"}
+                borderEndRadius={"1rem"}
+                width={"90%"}
+                height={"100%"}
+                focusBorderColor="transparent"
+                value={message}
+                onChange={(event)=> setMessage(event.target.value)}
+                onKeyDown={sendMessage}
+                />
+                <Button
+                height={"100%"}
+                borderEndRadius={"1rem"}
+                backgroundColor={"#ececec"}
+                _hover={{
+                  backgroundColor:"#ececec"
+                }}
+                >
+                <FontAwesomeIcon icon={faPaperPlane}/>
+                </Button>
+              </Box>
+            </Box>
 
           </Box>
         </Box>
@@ -379,4 +511,3 @@ const RoomPage = () => {
 };
 
 export default RoomPage;
-
