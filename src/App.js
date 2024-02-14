@@ -9,8 +9,8 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        <Route  exact path="/" element={<LobbyScreen />} />
-        <Route  exact path="/home" element={<Home />} />
+        {/* <Route  exact path="/" element={<LobbyScreen />} /> */}
+        <Route  exact path="/" element={<Home />} />
         <Route exact path="/login" element={<Authentication />} />
         <Route path="/room/:roomId" element={<RoomPage />} />
       </Routes>
