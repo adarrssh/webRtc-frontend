@@ -84,7 +84,7 @@ export const Home = () => {
                     fontWeight={"bold"}
                     fontSize={{ base: "1.5rem", sm: "2rem" }}
                 >
-                    Meet Cute
+                    Meetify
                 </Box>
                 <Box
                     paddingTop={4}
@@ -101,8 +101,8 @@ export const Home = () => {
                     <Tooltip
                         label={(
                             <>
-                                <div>John Doe</div> {/* Name */}
-                                <div>Email: john.doe@example.com</div> {/* Email */}
+                                <div>{userDetails.name}</div> {/* Name */}
+                                <div>{userDetails.email}</div> {/* Email */}
                             </>
                         )}
 
@@ -165,9 +165,11 @@ export const Home = () => {
                             display={{ base: "flex" }}
                             justifyContent={{ base: "flex-start" }}
                             onClick={createNewMeeting}
+                            minWidth={"fit-content"}
                         >
-                            <Image src={Video} />
-                            <Text paddingLeft={"1rem"}>
+                            <Image display={{base:"none",md:"block"}} src={Video} />
+                            <Text paddingLeft={"1rem"} paddingRight={"1rem"} 
+                            >
                                 New Meeting
                             </Text>
                         </Button>
@@ -175,27 +177,30 @@ export const Home = () => {
                         <Button
                             marginLeft={{ sm: "1rem" }}
                             marginTop={{ base: "1rem", sm: "0" }}
+
                             padding={"1.5rem"}
                             border={"1px"}
                             borderColor={"#54B435"}
                             backgroundColor={"white"}
                             color={"black"}
-                            _hover={{ backgroundColor: "none" }}
+                            _hover={{ backgroundColor: "white" }}
+                            _o
                         >
                             <Image
                                 src={Keyboard}
                                 color={"black"}
+                                display={{base:"none",md:"block"}}
                             />
 
                             <Input
-
+                                width={"100%"}
                                 paddingLeft={"10px"}
                                 border={"none"}
-                                placeholder={'Enter a code'}
+                                placeholder={'Enter a meeting code'}
                                 backgroundColor={"none"}
                                 _focusVisible={{
                                     outline: "none",
-                                    backgroundColor: "none"
+                                    backgroundColor: "white"
                                 }}
                                 value={roomId}
                                 onChange={(e)=>setRoomId(e.target.value)}
