@@ -28,7 +28,11 @@ export const Home = () => {
       minute: "numeric",
       // Remove seconds from formatting options
     };
-    return date.toLocaleDateString(undefined, options);
+    const formattedDate = date.toLocaleDateString(undefined, options);
+    // Remove "at" from the formatted date
+    const modifiedFormattedDate = formattedDate.replace(" at", "");
+  
+    return modifiedFormattedDate;
   };
 
     return (
