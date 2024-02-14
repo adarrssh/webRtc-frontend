@@ -36,12 +36,11 @@ const Login = () => {
           };
     
           const { data } = await axios.post(
-            `${process.env.REACT_APP_BASE_UR}/auth/login`,
+            `${process.env.REACT_APP_BASE_URL}/auth/login`,
             { email, password },
             config
           );
           
-          console.log(data.user)
           toast({
             title: "Login Successful",
             status: "success",
