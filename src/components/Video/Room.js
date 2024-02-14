@@ -8,7 +8,7 @@ import VideoControls from "../Controls/VideoControls";
 import TImeAndRoomId from "../Controls/TImeAndRoomId";
 
 export const RoomPage = () => {
-  const { socket } = useSocket();
+  const { socket, isAdmin } = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
@@ -25,10 +25,8 @@ export const RoomPage = () => {
   const [callAccepted, setCallAccepted] = useState(false);
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleUserJoined = useCallback(({ email, id }) => {
-    setIsAdmin(true);
     console.log(`Email ${email} joined room`);
     setRemoteSocketId(id);
   }, []);
@@ -221,6 +219,10 @@ export const RoomPage = () => {
     [remoteStream]
   );
 
+  // useEffect(()=>{
+  //   console.log({isAdmin,remoteSocketId,callStarted})
+  //   console.log(isAdmin && (remoteSocketId === null) && !callStarted)
+  // })
   return (
     <Box
       display={"flex"}
@@ -271,20 +273,35 @@ export const RoomPage = () => {
               </>
             ) : (
               <>
+
+                {isAdmin && (remoteSocketId === null) && !callStarted && 
+                (
+                  <Text color={"white"}>No one is in the room</Text>
+                )
+                }
+
+                {isAdmin && remoteSocketId && !callStarted && (
+                  <Button
+                    onClick={handleCallUser}
+                    display={callStarted ? "none" : "block"}
+                  >
+                    CALL
+                  </Button>
+                )}
+                
+
+                {!isAdmin && !callAccepted && !remoteStream && 
+                (
+                  <Text color={"white"}>Waiting for the admin call</Text>
+                )
+                }
+
                 {myStream && !isAdmin && (
                   <Button
                     onClick={sendStreams}
                     display={callAccepted ? "none" : "block"}
                   >
                     Send Stream
-                  </Button>
-                )}
-                {remoteSocketId && isAdmin && (
-                  <Button
-                    onClick={handleCallUser}
-                    display={callStarted ? "none" : "block"}
-                  >
-                    CALL
                   </Button>
                 )}
               </>

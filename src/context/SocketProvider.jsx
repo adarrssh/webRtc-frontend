@@ -11,10 +11,11 @@ export const useSocket = () => {
 export const SocketProvider = (props) => {
   const socket = useMemo(() => io("http://localhost:8000"), []);
 
-  const [userDetails, setUserDetails] = useState({name:"Adarsh",email:"adarsh00502@gmail.com"})
+  const [userDetails, setUserDetails] = useState({name:localStorage.getItem("username"),email:localStorage.getItem("email")})
+  const [isAdmin, setIsAdmin] = useState(false)
 
   return (
-    <SocketContext.Provider value={{socket, userDetails, setUserDetails}}>
+    <SocketContext.Provider value={{socket, userDetails, setUserDetails, isAdmin, setIsAdmin}}>
       {props.children}
     </SocketContext.Provider>
   );

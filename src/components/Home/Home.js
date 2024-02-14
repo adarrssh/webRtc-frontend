@@ -13,7 +13,7 @@ import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons'
 
 
 export const Home = () => {
-    const { socket, userDetails, setUserDetails } = useSocket();
+    const { socket, userDetails, setUserDetails , isAdmin, setIsAdmin } = useSocket();
     const [currentDateTime, setCurrentDateTime] = useState(new Date());
     const [roomId, setRoomId] = useState("")
     const uniqueRoomId = (uuid()).slice(0, 8);
@@ -21,7 +21,7 @@ export const Home = () => {
 
     const createNewMeeting = () => {
         if (localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")) {
-
+            setIsAdmin(true)
             socket.emit("room:join", { email: userDetails.email, room: uniqueRoomId })
         } else {
             navigate("/login")
