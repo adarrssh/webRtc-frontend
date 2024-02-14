@@ -140,7 +140,6 @@ export const Home = () => {
                 display={"flex"}
                 flexDir={"row"}
                 marginTop={"10vh"}
-                // backgroundColor={"red"}
                 justifyContent={"center"}
 
             >
@@ -152,15 +151,12 @@ export const Home = () => {
                     flex={2}
                     width={"100%"}
                     paddingRight={5}
-                    // backgroundColor={"blue"}
                     display={"flex"}
                     flexDir={"column"}
                     justifyContent={"center"}
-                // textAlign={"center"}
                 >
                     <Box
                         textAlign={{ base: "center", lg: "left" }}
-                    // backgroundColor={"yellow"}
                     >
 
 
@@ -255,12 +251,6 @@ export const Home = () => {
                     <Image src={HomeImage}></Image>
                 </Box>
             </Box>
-            {/* <Box
-            backgroundColor={"purple"}
-            width={{base:"100%",sm:"100%",md:"50%",lg:"90%"}}
-            >
-                hey
-            </Box> */}
         </Container>
     )
 }
