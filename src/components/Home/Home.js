@@ -20,10 +20,10 @@ export const Home = () => {
     const navigate = useNavigate()
 
     const createNewMeeting = () => {
-        if(localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")){
+        if (localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")) {
 
             socket.emit("room:join", { email: userDetails.email, room: uniqueRoomId })
-        }else{
+        } else {
             navigate("/login")
         }
 
@@ -31,8 +31,13 @@ export const Home = () => {
     }
 
     const joinExistingRoom = () => {
-        if (roomId.length) {
-            socket.emit("room:join", { email: userDetails.email, room: roomId })
+        if (localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")) {
+            if (roomId.length) {
+                socket.emit("room:join", { email: userDetails.email, room: roomId })
+            }
+        } else {
+            navigate("/login")
+
         }
     }
 
