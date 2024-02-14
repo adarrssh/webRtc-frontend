@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Image, Input, Text, Tooltip } from '@chakra-ui/react'
+import { Box, Button, Container, Flex, Image, Input, Menu, MenuButton, MenuItem, MenuList, Text, Tooltip } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useState } from 'react'
 import profileImage from "../../Image/Profile.png";
 import HomeImage from "../../Image/HomePageImage.png";
@@ -8,39 +8,48 @@ import { v4 as uuid } from "uuid";
 import { useNavigate } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import { useSocket } from '../../context/SocketProvider';
+import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons'
+
 
 
 export const Home = () => {
-    const {socket,userDetails,setUserDetails} = useSocket();
+    const { socket, userDetails, setUserDetails } = useSocket();
     const [currentDateTime, setCurrentDateTime] = useState(new Date());
-    const [roomId,setRoomId] = useState("")
-    const uniqueRoomId = (uuid()).slice(0,8);
+    const [roomId, setRoomId] = useState("")
+    const uniqueRoomId = (uuid()).slice(0, 8);
     const navigate = useNavigate()
 
     const createNewMeeting = () => {
-        socket.emit("room:join",{email:userDetails.email, room : uniqueRoomId})
+        if(localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")){
+
+            socket.emit("room:join", { email: userDetails.email, room: uniqueRoomId })
+        }else{
+            navigate("/login")
+        }
+
+
     }
 
     const joinExistingRoom = () => {
-        if(roomId.length){
-            socket.emit("room:join",{email:userDetails.email, room : roomId})
+        if (roomId.length) {
+            socket.emit("room:join", { email: userDetails.email, room: roomId })
         }
     }
 
     const handleJoinRoom = useCallback(
         (data) => {
-          const { email, room } = data;
-          navigate(`/room/${room}`);
+            const { email, room } = data;
+            navigate(`/room/${room}`);
         },
         [navigate]
-      );
+    );
 
     useEffect(() => {
         socket.on("room:join", handleJoinRoom);
         return () => {
-          socket.off("room:join", handleJoinRoom);
+            socket.off("room:join", handleJoinRoom);
         };
-      }, [socket, handleJoinRoom]);
+    }, [socket, handleJoinRoom]);
 
 
     useEffect(() => {
@@ -68,6 +77,12 @@ export const Home = () => {
         return modifiedFormattedDate;
     };
 
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('email');
+        localStorage.removeItem('username');
+        navigate('/login')
+    }
     return (
         <Container centerContent maxWidth={"1500px"} height={"100vh"}>
             <Box
@@ -98,18 +113,24 @@ export const Home = () => {
                         paddingTop={2}
                         display={{ base: "none", lg: "block" }}
                     >{formatDate(currentDateTime)}</Text>
-                    <Tooltip
-                        label={(
-                            <>
-                                <div>{userDetails.name}</div> {/* Name */}
-                                <div>{userDetails.email}</div> {/* Email */}
-                            </>
-                        )}
+                    {
+                        localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username") ?
 
-                    >
+                            <Menu>
+                                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} backgroundColor={"white"}
+                                    _hover={{ backgroundColor: "white" }}
+                                >
+                                    <Image src={profileImage} borderRadius={"50%"} height={"30px"}></Image>
+                                </MenuButton>
+                                <MenuList _hover={{ backgroundColor: "white" }} backgroundColor={"white"}>
+                                    <MenuItem>{localStorage.getItem("email")}</MenuItem>
+                                    <MenuItem onClick={logout}>Logout</MenuItem>
+                                </MenuList>
+                            </Menu>
+                            :
+                            <Image src={profileImage} borderRadius={"50%"} height={"50px"}></Image>
 
-                        <Image src={profileImage} borderRadius={"50%"} height={"50px"}></Image>
-                    </Tooltip>
+                    }
                 </Box>
             </Box>
 
@@ -167,8 +188,8 @@ export const Home = () => {
                             onClick={createNewMeeting}
                             minWidth={"fit-content"}
                         >
-                            <Image display={{base:"none",md:"block"}} src={Video} />
-                            <Text paddingLeft={"1rem"} paddingRight={"1rem"} 
+                            <Image display={{ base: "none", md: "block" }} src={Video} />
+                            <Text paddingLeft={"1rem"} paddingRight={"1rem"}
                             >
                                 New Meeting
                             </Text>
@@ -189,7 +210,7 @@ export const Home = () => {
                             <Image
                                 src={Keyboard}
                                 color={"black"}
-                                display={{base:"none",md:"block"}}
+                                display={{ base: "none", md: "block" }}
                             />
 
                             <Input
@@ -203,21 +224,21 @@ export const Home = () => {
                                     backgroundColor: "white"
                                 }}
                                 value={roomId}
-                                onChange={(e)=>setRoomId(e.target.value)}
+                                onChange={(e) => setRoomId(e.target.value)}
                             />
 
 
                         </Button>
-                        {roomId ? <Button 
-                        
-                        marginLeft={"1rem"}
-                        padding={"1.5rem"}
-                        color={"white"}
-                        backgroundColor={"#54B435"}
-                        border={"1px"}
-                        borderColor={"#54B435"}
-                        _hover={{backgroundColor:"none"}}
-                        onClick={joinExistingRoom}
+                        {roomId ? <Button
+
+                            marginLeft={"1rem"}
+                            padding={"1.5rem"}
+                            color={"white"}
+                            backgroundColor={"#54B435"}
+                            border={"1px"}
+                            borderColor={"#54B435"}
+                            _hover={{ backgroundColor: "none" }}
+                            onClick={joinExistingRoom}
                         >Join</Button> : <></>}
 
 

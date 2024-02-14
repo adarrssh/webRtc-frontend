@@ -9,7 +9,7 @@ export const useSocket = () => {
 };
 
 export const SocketProvider = (props) => {
-  const socket = useMemo(() => io("https://one-to-one-video-service.onrender.com"), []);
+  const socket = useMemo(() => io("http://localhost:8000"), []);
 
   const [userDetails, setUserDetails] = useState({name:"Adarsh",email:"adarsh00502@gmail.com"})
 
