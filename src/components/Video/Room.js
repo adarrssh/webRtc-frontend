@@ -1,12 +1,16 @@
 import React, { useEffect, useCallback, useState, useMemo } from "react";
 import peer from "../../service/peer";
 import { useSocket } from "../../context/SocketProvider";
-import { Box, Button, Text, useToast } from "@chakra-ui/react";
+import { Box, Button, Image, Text, useToast } from "@chakra-ui/react";
 import { formatTime } from "../../util/FormatTime";
 import ChatBox from "../Chat/ChatBox";
 import VideoControls from "../Controls/VideoControls";
 import TImeAndRoomId from "../Controls/TImeAndRoomId";
 import { useNavigate } from "react-router-dom";
+import cameraOffLeftAvatar from '../../Image/cameraOffLeftAvatar.png'
+import cameraOffRightAvatar from '../../Image/cameraOffRightAvatar.png'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMicrophoneSlash } from "@fortawesome/free-solid-svg-icons";
 
 export const RoomPage = () => {
   const { socket, isAdmin, roomId, setRoomId } = useSocket();
@@ -25,7 +29,9 @@ export const RoomPage = () => {
   const [callStarted, setCallStarted] = useState(false);
   const [callAccepted, setCallAccepted] = useState(false);
   const [micOn, setMicOn] = useState(true);
+  const [senderMicOn, setSenderMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
+  const [senderCameraOn, setSenderCameraOn] = useState(true);
   const navigate = useNavigate()
   const toast = useToast()
 
@@ -37,7 +43,7 @@ export const RoomPage = () => {
 
   const handleCallUser = useCallback(async () => {
     toast({
-      title:  "Please wait while the user accept the call",
+      title: "Please wait while the user accept the call",
       status: "success",
       duration: 4000,
       isClosable: true,
@@ -116,7 +122,6 @@ export const RoomPage = () => {
   useEffect(() => {
     peer.peer.addEventListener("track", async (ev) => {
       const remoteStream = ev.streams;
-      console.log("GOT TRACKS!!");
       setRemoteStream(remoteStream[0]);
     });
   }, []);
@@ -132,7 +137,7 @@ export const RoomPage = () => {
         new MediaStream(myStream.getAudioTracks().concat(videoTracks))
       );
     }
-
+    socket.emit("camera:toggle", { to: remoteSocketId })
     setCameraOn(!cameraOn);
   };
 
@@ -143,6 +148,8 @@ export const RoomPage = () => {
       audioTrack.enabled = !audioTrack.enabled;
       setMyStream(new MediaStream([myStream.getVideoTracks()[0], audioTrack]));
     }
+    socket.emit("mic:toggle", { to: remoteSocketId })
+
     setMicOn(!micOn);
   };
 
@@ -158,6 +165,15 @@ export const RoomPage = () => {
     navigate("/")
   }
 
+  const handelSenderCamera = () => {
+    setSenderCameraOn(!senderCameraOn)
+  }
+
+  const handelSenderMic = () => {
+    setSenderMicOn(!senderMicOn)
+  }
+
+
   useEffect(() => {
     socket.on("user:joined", handleUserJoined);
     socket.on("incomming:call", handleIncommingCall);
@@ -166,6 +182,8 @@ export const RoomPage = () => {
     socket.on("peer:nego:final", handleNegoNeedFinal);
     socket.on("incoming:message", handleIncomingMessage);
     socket.on("call:ended", handleCallEnd);
+    socket.on("sender:cameraToggle", handelSenderCamera);
+    socket.on("sender:micToggle", handelSenderMic);
 
     return () => {
       socket.off("user:joined", handleUserJoined);
@@ -174,6 +192,8 @@ export const RoomPage = () => {
       socket.off("peer:nego:needed", handleNegoNeedIncomming);
       socket.off("peer:nego:final", handleNegoNeedFinal);
       socket.off("call:ended", handleCallEnd);
+      socket.off("sender:cameraToggle", handelSenderCamera)
+      socket.off("sender:micToggle", handelSenderMic)
     };
   }, [
     socket,
@@ -183,7 +203,9 @@ export const RoomPage = () => {
     handleNegoNeedIncomming,
     handleNegoNeedFinal,
     handleIncomingMessage,
-    handleCallEnd
+    handleCallEnd,
+    handelSenderCamera,
+    handelSenderMic
   ]);
 
   const sendMessage = (event) => {
@@ -213,7 +235,7 @@ export const RoomPage = () => {
 
 
   const endCall = () => {
-    socket.emit("end:call",{to:remoteSocketId})
+    socket.emit("end:call", { to: remoteSocketId })
     setRoomId("")
     navigate("/")
     toast({
@@ -222,41 +244,67 @@ export const RoomPage = () => {
       duration: 5000,
       isClosable: true,
       position: "bottom",
-  });
+    });
   }
 
   const renderVideo = useMemo(
     () => (
 
       cameraOn ?
-      <Box
-      width={{base:"90%"}}
-      height={{base:"40%",sm:"40%",md:"40%",lg:"60%"}}
-      // backgroundColor={"#2e2e2e"}
-      >
-        <video
-          className="video"
-          autoPlay
-          playsInline
-          muted
-          ref={(videoRef) => videoRef && (videoRef.srcObject = myStream)}
-        />
-      </Box> 
-       : 
-       <Box
-       width={{base:"60%",sm:"90%","2xl":"600px"}}
-       height={{base:"40%",sm:"40%",md:"40%",lg:"60%"}}
-       backgroundColor={"#2e2e2e"}
-       ></Box>
+        <Box
+          width={{ base: "90%" }}
+          height={{ base: "40%", sm: "40%", md: "40%", lg: "60%" }}
+        // backgroundColor={"#2e2e2e"}
+        >
+          <video
+            className="video"
+            autoPlay
+            playsInline
+            muted
+            ref={(videoRef) => videoRef && (videoRef.srcObject = myStream)}
+          />
+        </Box>
+        :
+        <Box
+          width={{ base: "60%", sm: "90%", "2xl": "600px" }}
+          height={{ base: "40%", sm: "40%", md: "40%", lg: "60%" }}
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          flexDirection={"column"}
+          backgroundColor={"#2e2e2e"}
+        >
+          <Box
+            height={"10%"}
+            width={"100%"}
+            display={"flex"}
+            justifyContent={"flex-end"}
+            paddingRight={"20px"}
+            paddingTop={"20px"}
+          >
+            { !micOn && <FontAwesomeIcon icon={faMicrophoneSlash} color="white" /> }
+
+          </Box>
+          <Box
+            height={"90%"}
+            width={"100%"}
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+          >
+            <Image src={cameraOffLeftAvatar}></Image>
+          </Box>
+        </Box>
     ),
-    [myStream]
+    [myStream,micOn,cameraOn]
   );
 
   const renderSendvideo = useMemo(
     () => (
+      senderCameraOn ? 
       <Box
-      width={{base:"90%"}}
-      height={{base:"40%",sm:"40%",md:"40%",lg:"60%"}}
+        width={{ base: "90%" }}
+        height={{ base: "40%", sm: "40%", md: "40%", lg: "60%" }}
       // backgroundColor={"#2e2e2e"}
       >
         <video
@@ -265,9 +313,39 @@ export const RoomPage = () => {
           playsInline
           ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
         />
+      </Box> :
+        <Box
+        width={{ base: "60%", sm: "90%", "2xl": "600px" }}
+        height={{ base: "40%", sm: "40%", md: "40%", lg: "60%" }}
+        display={"flex"}
+        justifyContent={"center"}
+        alignItems={"center"}
+        flexDirection={"column"}
+        backgroundColor={"#2e2e2e"}
+      >
+        <Box
+          height={"10%"}
+          width={"100%"}
+          display={"flex"}
+          justifyContent={"flex-end"}
+          paddingRight={"20px"}
+          paddingTop={"20px"}
+        >
+          { !senderMicOn && <FontAwesomeIcon icon={faMicrophoneSlash} color="white" /> }
+
+        </Box>
+        <Box
+          height={"90%"}
+          width={"100%"}
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+        >
+          <Image src={cameraOffRightAvatar}></Image>
+        </Box>
       </Box>
     ),
-    [remoteStream]
+    [remoteStream,senderMicOn,senderCameraOn]
   );
 
   return (
@@ -293,7 +371,7 @@ export const RoomPage = () => {
             width={"100%"}
             height={"90vh"}
             display={"flex"}
-            flexDirection={{base:"column",sm:"row"}}
+            flexDirection={{ base: "column", sm: "row" }}
           >
             {(isAdmin && callStarted) || (!isAdmin && callAccepted) ? (
               <>
@@ -307,7 +385,7 @@ export const RoomPage = () => {
                   {myStream && renderVideo}
                 </Box>
 
-               { remoteStream &&  <Box
+                {remoteStream && <Box
                   flex={"1"}
                   display={"flex"}
                   justifyContent={"center"}
@@ -323,16 +401,16 @@ export const RoomPage = () => {
                 {isAdmin && (remoteSocketId === null) && !callStarted &&
                   (
                     <Box
-                     width={"100%"}
-                     height={"100%"}
-                     display={"flex"}
-                     flexDirection={"column"}
-                     justifyContent={"center"}
-                     alignItems={"center"}
+                      width={"100%"}
+                      height={"100%"}
+                      display={"flex"}
+                      flexDirection={"column"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
                     >
 
-                    <Text color={"white"}  fontWeight={"bold"} >Please wait while the other user joins....</Text>
-                    <Text color={"white"}  fontWeight={"bold"} display={{base:"block",sm:"none"}} >Your room id is : {roomId}</Text>
+                      <Text color={"white"} fontWeight={"bold"} >Please wait while the other user joins....</Text>
+                      <Text color={"white"} fontWeight={"bold"} display={{ base: "block", sm: "none" }} >Your room id is : {roomId}</Text>
                     </Box>
                   )
                 }
@@ -340,21 +418,21 @@ export const RoomPage = () => {
                 {isAdmin && remoteSocketId && !callStarted &&
                   (
                     <Box
-                    width={"100%"}
-                    height={"100%"}
-                    display={"flex"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
+                      width={"100%"}
+                      height={"100%"}
+                      display={"flex"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
 
                     >
 
-                    <Button
-                      onClick={handleCallUser}
-                      display={callStarted ? "none" : "block"}
+                      <Button
+                        onClick={handleCallUser}
+                        display={callStarted ? "none" : "block"}
                       >
-                      Start the CALL
-                    </Button>
-                      </Box>
+                        Start the CALL
+                      </Button>
+                    </Box>
                   )
                 }
 
@@ -362,36 +440,36 @@ export const RoomPage = () => {
                 {!isAdmin && !callAccepted && !remoteStream &&
                   (
                     <Box
-                     width={"100%"}
-                     height={"100%"}
+                      width={"100%"}
+                      height={"100%"}
 
-                     display={"flex"}
-                     justifyContent={"center"}
-                     alignItems={"center"}
+                      display={"flex"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
                     >
 
-                    <Text color={"white"} fontWeight={"bold"}>Your call will start once the admin starts the call</Text>
-                    </Box>                  )
+                      <Text color={"white"} fontWeight={"bold"}>Your call will start once the admin starts the call</Text>
+                    </Box>)
                 }
 
                 {myStream && !isAdmin &&
                   (
                     <Box
-                    width={"100%"}
-                    height={"100%"}
+                      width={"100%"}
+                      height={"100%"}
 
-                    display={"flex"}
-                    justifyContent={"center"}
-                    alignItems={"center"}
+                      display={"flex"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
                     >
 
-                    <Button
-                      onClick={sendStreams}
-                      display={callAccepted ? "none" : "block"}
+                      <Button
+                        onClick={sendStreams}
+                        display={callAccepted ? "none" : "block"}
                       >
-                      Click here to Accept the Call
-                    </Button>
-                      </Box>
+                        Click here to Accept the Call
+                      </Button>
+                    </Box>
                   )
                 }
               </>
