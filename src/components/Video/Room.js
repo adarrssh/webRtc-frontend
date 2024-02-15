@@ -33,7 +33,16 @@ export const RoomPage = () => {
     console.log(`Email ${email} joined room`);
     setRemoteSocketId(id);
   }, []);
+
+
   const handleCallUser = useCallback(async () => {
+    toast({
+      title:  "Please wait while the user accept the call",
+      status: "success",
+      duration: 4000,
+      isClosable: true,
+      position: "bottom",
+    });
     setCallStarted(true);
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
@@ -287,15 +296,15 @@ export const RoomPage = () => {
                   {myStream && renderVideo}
                 </Box>
 
-                <Box
+               { remoteStream &&  <Box
                   flex={"1"}
                   display={"flex"}
                   justifyContent={"center"}
                   alignItems={"center"}
                   padding={1}
                 >
-                  {remoteStream && renderSendvideo}
-                </Box>
+                  {renderSendvideo}
+                </Box>}
               </>
             ) : (
               <>

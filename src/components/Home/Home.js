@@ -54,6 +54,11 @@ export const Home = () => {
         [navigate]
     );
 
+    useEffect(()=>{
+        if(roomId){
+            setRoomId("")
+        }
+    },[])
     useEffect(() => {
         socket.on("room:join", handleJoinRoom);
         return () => {
