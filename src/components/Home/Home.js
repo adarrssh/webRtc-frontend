@@ -198,7 +198,7 @@ export const Home = () => {
                             borderColor={"#54B435"}
                             _hover={{ backgroundColor: "none" }}
                             display={{ base: "flex" }}
-                            justifyContent={{ base: "flex-start" }}
+                            justifyContent={{ base: "center" , sm:"flex-start" }}
                             onClick={createNewMeeting}
                             minWidth={"fit-content"}
                         >
@@ -212,7 +212,6 @@ export const Home = () => {
                         <Button
                             marginLeft={{ sm: "1rem" }}
                             marginTop={{ base: "1rem", sm: "0" }}
-
                             padding={"1.5rem"}
                             border={"1px"}
                             borderColor={"#54B435"}
@@ -232,7 +231,6 @@ export const Home = () => {
                                 paddingLeft={"10px"}
                                 border={"none"}
                                 placeholder={'Enter a meeting code'}
-                                backgroundColor={"none"}
                                 _focusVisible={{
                                     outline: "none",
                                     backgroundColor: "white"
