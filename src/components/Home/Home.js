@@ -15,6 +15,7 @@ import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons'
 export const Home = () => {
     const { socket, userDetails, setUserDetails , isAdmin, setIsAdmin, roomId, setRoomId } = useSocket();
     const [currentDateTime, setCurrentDateTime] = useState(new Date());
+    const [inputRoomId, setInputRoomId] = useState("");
     const uniqueRoomId = (uuid()).slice(0, 8);
     const navigate = useNavigate()
     const toast = useToast()
@@ -27,11 +28,12 @@ export const Home = () => {
             navigate("/login")
         }
     }
-
     const joinExistingRoom = () => {
         if (localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")) {
-            if (roomId.length) {
-                socket.emit("room:join", { email: userDetails.email, room: roomId })
+
+            if (inputRoomId.length) {
+                setRoomId(inputRoomId)
+                socket.emit("room:join", { email: userDetails.email, room: inputRoomId })
             }
         } else {
             navigate("/login")
@@ -234,13 +236,13 @@ export const Home = () => {
                                     outline: "none",
                                     backgroundColor: "white"
                                 }}
-                                value={roomId}
-                                onChange={(e) => setRoomId(e.target.value)}
+                                value={inputRoomId}
+                                onChange={(e) => setInputRoomId(e.target.value)}
                             />
 
 
                         </Button>
-                        {roomId ? <Button
+                        {inputRoomId ? <Button
 
                             marginLeft={"1rem"}
                             padding={"1.5rem"}
