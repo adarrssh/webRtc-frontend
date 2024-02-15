@@ -227,7 +227,9 @@ export const RoomPage = () => {
 
   const renderVideo = useMemo(
     () => (
-      <Box>
+      <Box
+      backgroundColor={"red"}
+      >
         <video
           className="video"
           autoPlay
@@ -244,7 +246,9 @@ export const RoomPage = () => {
 
   const renderSendvideo = useMemo(
     () => (
-      <Box>
+      <Box
+      backgroundColor={"yellow"}
+      >
         <video
           className="video"
           autoPlay
@@ -269,7 +273,6 @@ export const RoomPage = () => {
       <Box
         display={"flex"}
         justifyContent={"center"}
-        maxWidth={"1500px"}
         width={"100%"}
       >
         <Box
@@ -282,7 +285,7 @@ export const RoomPage = () => {
             width={"100%"}
             height={"90vh"}
             display={"flex"}
-            flexDirection={"row"}
+            flexDirection={{base:"column",sm:"row"}}
           >
             {(isAdmin && callStarted) || (!isAdmin && callAccepted) ? (
               <>

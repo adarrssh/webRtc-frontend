@@ -24,7 +24,7 @@ function App() {
   }, []);
 
   useEffect(()=>{
-      console.log(pageLoaded)
+      console.log('inside app :: ' + pageLoaded)
   })
 
   return (
