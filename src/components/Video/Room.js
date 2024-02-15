@@ -227,19 +227,27 @@ export const RoomPage = () => {
 
   const renderVideo = useMemo(
     () => (
+
+      cameraOn ?
       <Box
-      backgroundColor={"red"}
+      width={{base:"90%"}}
+      height={{base:"40%",sm:"40%",md:"40%",lg:"60%"}}
+      // backgroundColor={"#2e2e2e"}
       >
         <video
           className="video"
           autoPlay
           playsInline
           muted
-          height="100%"
-          width="100%"
           ref={(videoRef) => videoRef && (videoRef.srcObject = myStream)}
         />
-      </Box>
+      </Box> 
+       : 
+       <Box
+       width={{base:"60%",sm:"90%","2xl":"600px"}}
+       height={{base:"40%",sm:"40%",md:"40%",lg:"60%"}}
+       backgroundColor={"#2e2e2e"}
+       ></Box>
     ),
     [myStream]
   );
@@ -247,14 +255,14 @@ export const RoomPage = () => {
   const renderSendvideo = useMemo(
     () => (
       <Box
-      backgroundColor={"yellow"}
+      width={{base:"90%"}}
+      height={{base:"40%",sm:"40%",md:"40%",lg:"60%"}}
+      // backgroundColor={"#2e2e2e"}
       >
         <video
           className="video"
           autoPlay
           playsInline
-          height="100%"
-          width="100%"
           ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
         />
       </Box>
