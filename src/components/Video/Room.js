@@ -326,11 +326,13 @@ export const RoomPage = () => {
                      width={"100%"}
                      height={"100%"}
                      display={"flex"}
+                     flexDirection={"column"}
                      justifyContent={"center"}
                      alignItems={"center"}
                     >
 
                     <Text color={"white"}  fontWeight={"bold"} >Please wait while the other user joins....</Text>
+                    <Text color={"white"}  fontWeight={"bold"} display={{base:"block",sm:"none"}} >Your room id is : {roomId}</Text>
                     </Box>
                   )
                 }
