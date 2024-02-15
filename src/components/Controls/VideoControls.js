@@ -4,7 +4,7 @@ import { faCamera, faComment, faMicrophone, faMicrophoneSlash, faPhoneSlash } fr
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ReactComponent as Icon } from "../../Image/cameraoff.svg";
 
-const VideoControls = ({micOn,cameraOn,toggleAudio,toggleCamera,openChat,setopenChat}) => {
+const VideoControls = ({micOn,cameraOn,toggleAudio,toggleCamera,openChat,setopenChat,endCall}) => {
     return (
         <>
 
@@ -82,6 +82,8 @@ const VideoControls = ({micOn,cameraOn,toggleAudio,toggleCamera,openChat,setopen
                 _hover={{
                     cursor: "pointer",
                 }}
+
+                onClick={endCall}
             >
                 <FontAwesomeIcon icon={faPhoneSlash} color="white" />
             </Box>

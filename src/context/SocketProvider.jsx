@@ -12,9 +12,10 @@ export const SocketProvider = (props) => {
   const socket = useMemo(() => io(`${process.env.REACT_APP_BASE_URL}`), []);
   const [userDetails, setUserDetails] = useState({name:localStorage.getItem("username"),email:localStorage.getItem("email")})
   const [isAdmin, setIsAdmin] = useState(false)
+  const [roomId, setRoomId] = useState("")
 
   return (
-    <SocketContext.Provider value={{socket, userDetails, setUserDetails, isAdmin, setIsAdmin}}>
+    <SocketContext.Provider value={{socket, userDetails, setUserDetails, isAdmin, setIsAdmin, roomId,setRoomId}}>
       {props.children}
     </SocketContext.Provider>
   );
