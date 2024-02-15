@@ -165,7 +165,7 @@ export const Home = () => {
                 {/* left box */}
                 <Box
 
-                    paddingLeft={10}
+                    paddingLeft={{base:2,md:10}}
                     flex={2}
                     width={"100%"}
                     paddingRight={5}
@@ -244,8 +244,8 @@ export const Home = () => {
 
                         </Button>
                         {inputRoomId ? <Button
-
-                            marginLeft={"1rem"}
+                            marginTop={{base:"15px",sm:"0"}}
+                            marginLeft={{base:"0",sm:"1rem"}}
                             padding={"1.5rem"}
                             color={"white"}
                             backgroundColor={"#54B435"}

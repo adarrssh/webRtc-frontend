@@ -324,6 +324,7 @@ export const RoomPage = () => {
                   (
                     <Box
                      width={"100%"}
+                     height={"100%"}
                      display={"flex"}
                      justifyContent={"center"}
                      alignItems={"center"}
@@ -338,9 +339,11 @@ export const RoomPage = () => {
                   (
                     <Box
                     width={"100%"}
+                    height={"100%"}
                     display={"flex"}
                     justifyContent={"center"}
                     alignItems={"center"}
+
                     >
 
                     <Button
@@ -358,6 +361,8 @@ export const RoomPage = () => {
                   (
                     <Box
                      width={"100%"}
+                     height={"100%"}
+
                      display={"flex"}
                      justifyContent={"center"}
                      alignItems={"center"}
@@ -371,6 +376,8 @@ export const RoomPage = () => {
                   (
                     <Box
                     width={"100%"}
+                    height={"100%"}
+
                     display={"flex"}
                     justifyContent={"center"}
                     alignItems={"center"}
