@@ -29,16 +29,11 @@ function App() {
 
   return (
     <div className="App">
-      {pageLoaded ? (
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route exact path="/login" element={<Authentication />} />
           <Route path="/room/:roomId" element={<RoomPage />} />
         </Routes>
-      ) : (
-        // Render loading indicator or message here
-        <h2>Loading...</h2>
-      )}
     </div>
   );
 }
