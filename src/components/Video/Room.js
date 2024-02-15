@@ -1,14 +1,15 @@
 import React, { useEffect, useCallback, useState, useMemo } from "react";
 import peer from "../../service/peer";
 import { useSocket } from "../../context/SocketProvider";
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box, Button, Text, useToast } from "@chakra-ui/react";
 import { formatTime } from "../../util/FormatTime";
 import ChatBox from "../Chat/ChatBox";
 import VideoControls from "../Controls/VideoControls";
 import TImeAndRoomId from "../Controls/TImeAndRoomId";
+import { useNavigate } from "react-router-dom";
 
 export const RoomPage = () => {
-  const { socket, isAdmin } = useSocket();
+  const { socket, isAdmin, roomId, setRoomId } = useSocket();
   const [remoteSocketId, setRemoteSocketId] = useState(null);
   const [myStream, setMyStream] = useState();
   const [remoteStream, setRemoteStream] = useState();
@@ -25,13 +26,23 @@ export const RoomPage = () => {
   const [callAccepted, setCallAccepted] = useState(false);
   const [micOn, setMicOn] = useState(true);
   const [cameraOn, setCameraOn] = useState(true);
+  const navigate = useNavigate()
+  const toast = useToast()
 
   const handleUserJoined = useCallback(({ email, id }) => {
     console.log(`Email ${email} joined room`);
     setRemoteSocketId(id);
   }, []);
 
+
   const handleCallUser = useCallback(async () => {
+    toast({
+      title:  "Please wait while the user accept the call",
+      status: "success",
+      duration: 4000,
+      isClosable: true,
+      position: "bottom",
+    });
     setCallStarted(true);
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
@@ -135,6 +146,18 @@ export const RoomPage = () => {
     setMicOn(!micOn);
   };
 
+  const handleCallEnd = () => {
+    setRoomId("")
+    toast({
+      title: "Call ended: user left the chat",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "bottom",
+    });
+    navigate("/")
+  }
+
   useEffect(() => {
     socket.on("user:joined", handleUserJoined);
     socket.on("incomming:call", handleIncommingCall);
@@ -142,6 +165,7 @@ export const RoomPage = () => {
     socket.on("peer:nego:needed", handleNegoNeedIncomming);
     socket.on("peer:nego:final", handleNegoNeedFinal);
     socket.on("incoming:message", handleIncomingMessage);
+    socket.on("call:ended", handleCallEnd);
 
     return () => {
       socket.off("user:joined", handleUserJoined);
@@ -149,7 +173,7 @@ export const RoomPage = () => {
       socket.off("call:accepted", handleCallAccepted);
       socket.off("peer:nego:needed", handleNegoNeedIncomming);
       socket.off("peer:nego:final", handleNegoNeedFinal);
-      socket.off("incoming:message", handleIncomingMessage);
+      socket.off("call:ended", handleCallEnd);
     };
   }, [
     socket,
@@ -159,6 +183,7 @@ export const RoomPage = () => {
     handleNegoNeedIncomming,
     handleNegoNeedFinal,
     handleIncomingMessage,
+    handleCallEnd
   ]);
 
   const sendMessage = (event) => {
@@ -185,6 +210,20 @@ export const RoomPage = () => {
 
     return () => clearInterval(intervalId);
   }, [currentTime]);
+
+
+  const endCall = () => {
+    socket.emit("end:call",{to:remoteSocketId})
+    setRoomId("")
+    navigate("/")
+    toast({
+      title: "Call ended",
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+      position: "bottom",
+  });
+  }
 
   const renderVideo = useMemo(
     () => (
@@ -219,10 +258,6 @@ export const RoomPage = () => {
     [remoteStream]
   );
 
-  // useEffect(()=>{
-  //   console.log({isAdmin,remoteSocketId,callStarted})
-  //   console.log(isAdmin && (remoteSocketId === null) && !callStarted)
-  // })
   return (
     <Box
       display={"flex"}
@@ -261,15 +296,15 @@ export const RoomPage = () => {
                   {myStream && renderVideo}
                 </Box>
 
-                <Box
+               { remoteStream &&  <Box
                   flex={"1"}
                   display={"flex"}
                   justifyContent={"center"}
                   alignItems={"center"}
                   padding={1}
                 >
-                  {remoteStream && renderSendvideo}
-                </Box>
+                  {renderSendvideo}
+                </Box>}
               </>
             ) : (
               <>
@@ -345,7 +380,7 @@ export const RoomPage = () => {
 
           {/* bottom control section  */}
           <Box display={"flex"} flexDirection={"row"}>
-            <TImeAndRoomId formatTime={formatTime} currentTime={currentTime} />
+            <TImeAndRoomId formatTime={formatTime} currentTime={currentTime} roomId={roomId} />
 
             <Box
               flex={"1"}
@@ -362,6 +397,7 @@ export const RoomPage = () => {
                     toggleCamera={toggleCamera}
                     openChat={openChat}
                     setopenChat={setopenChat}
+                    endCall={endCall}
                   />
                 </>
               ) : (

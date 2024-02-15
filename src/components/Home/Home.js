@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Image, Input, Menu, MenuButton, MenuItem, MenuList, Text, Tooltip } from '@chakra-ui/react'
+import { Box, Button, Container, Flex, Image, Input, Menu, MenuButton, MenuItem, MenuList, Text, Tooltip, useToast } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useState } from 'react'
 import profileImage from "../../Image/Profile.png";
 import HomeImage from "../../Image/HomePageImage.png";
@@ -13,21 +13,19 @@ import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons'
 
 
 export const Home = () => {
-    const { socket, userDetails, setUserDetails , isAdmin, setIsAdmin } = useSocket();
+    const { socket, userDetails, setUserDetails , isAdmin, setIsAdmin, roomId, setRoomId } = useSocket();
     const [currentDateTime, setCurrentDateTime] = useState(new Date());
-    const [roomId, setRoomId] = useState("")
     const uniqueRoomId = (uuid()).slice(0, 8);
     const navigate = useNavigate()
-
+    const toast = useToast()
     const createNewMeeting = () => {
         if (localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")) {
             setIsAdmin(true)
+            setRoomId(uniqueRoomId)
             socket.emit("room:join", { email: userDetails.email, room: uniqueRoomId })
         } else {
             navigate("/login")
         }
-
-
     }
 
     const joinExistingRoom = () => {
@@ -44,11 +42,23 @@ export const Home = () => {
     const handleJoinRoom = useCallback(
         (data) => {
             const { email, room } = data;
+            toast({
+                title:  isAdmin ? "Call started: waiting for the other user to join":"Call Started: waiting for the user to start the call",
+                status: "success",
+                duration: 4000,
+                isClosable: true,
+                position: "bottom",
+              });
             navigate(`/room/${room}`);
         },
         [navigate]
     );
 
+    useEffect(()=>{
+        if(roomId){
+            setRoomId("")
+        }
+    },[])
     useEffect(() => {
         socket.on("room:join", handleJoinRoom);
         return () => {

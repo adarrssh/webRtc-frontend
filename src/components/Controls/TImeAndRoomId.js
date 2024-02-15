@@ -1,7 +1,7 @@
 import { Box, Text } from '@chakra-ui/react'
 import React from 'react'
 
-const TImeAndRoomId = ({formatTime,currentTime}) => {
+const TImeAndRoomId = ({formatTime,currentTime,roomId}) => {
   return (
     <Box
     flex={"1"}
@@ -11,7 +11,7 @@ const TImeAndRoomId = ({formatTime,currentTime}) => {
     paddingLeft={10}
   >
     <Text color={"white"} display={{ base: "none", md: "block" }}>
-      {formatTime(currentTime)} | room id
+      {formatTime(currentTime)} | {roomId}
     </Text>
   </Box>
   )
