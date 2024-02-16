@@ -8,3 +8,10 @@
     /* Firefox */
     -moz-transform:rotateY(180deg); 
 }
+
+@media only screen and (max-heigt: 480px) {
+
+    .video{
+        height: 200px;
+    }
+  }

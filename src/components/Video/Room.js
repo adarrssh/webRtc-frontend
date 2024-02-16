@@ -271,7 +271,7 @@ export const RoomPage = () => {
       cameraOn ?
         <Box
           width={{ base: "90%" }}
-          height={{ base: "240px", sm: "40%", md: "40%", lg: "60%" }}
+          height={{ base: "200px", sm: "40%", md: "40%", lg: "60%" }}
           display={"flex"}
           justifyContent={"center"}
           alignItems={"center"}
@@ -326,7 +326,7 @@ export const RoomPage = () => {
       senderCameraOn ?
         <Box
           width={{ base: "90%" }}
-          height={{ base: "240px", sm: "40%", md: "40%", lg: "60%" }}
+          height={{ base: "200px", sm: "40%", md: "40%", lg: "60%" }}
           display={"flex"}
           justifyContent={"center"}
           alignItems={"center"}
