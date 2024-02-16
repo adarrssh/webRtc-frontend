@@ -14,6 +14,11 @@ const Login = () => {
     const toast = useToast()
     const navigate = useNavigate()
 
+    const guestUserLogin = () => {
+      setEmail("guestUser@1234")
+      setPassword("1234")
+    }
+
     const submitHandler = async () => {
         setPicLoading(true);
         if (!email || !password) {
@@ -108,19 +113,17 @@ const Login = () => {
             >
                 Login
             </Button>
-            {/* <Button
-                variant="outline"
-                borderColor={"#6f4fb3"}
-                color='#6f4fb3'
+            <Button
                 width="100%"
-                onClick={() => {
-                    setEmail("guest@example.com");
-                    setPassword("123456");
-                }}
-                _hover={{color:'white', bg:'#6f4fb3', border : '1px', borderColor:'#6f4fb3'}}
+                backgroundColor="#7bcc7b"
+                color={'white'}
+                style={{ marginTop: 15 }}
+                onClick={guestUserLogin}
+                isLoading={picLoading}
+                _hover={{bg:'white', color:'#7bcc7b', border : '1px', borderColor:'#7bcc7b'}}
             >
-                Sign in as a guest
-            </Button> */}
+                Get guest user credentials
+            </Button>
         </VStack>
     )
 }

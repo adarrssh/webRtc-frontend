@@ -154,6 +154,10 @@ export const RoomPage = () => {
   };
 
   const handleCallEnd = () => {
+    socket.emit("end:call", { to: remoteSocketId })
+    if (myStream) {
+      myStream.getTracks().forEach(track => track.stop());
+    }
     setRoomId("")
     toast({
       title: "Call ended: user left the chat",
@@ -247,6 +251,9 @@ export const RoomPage = () => {
 
   const endCall = () => {
     socket.emit("end:call", { to: remoteSocketId })
+    if (myStream) {
+      myStream.getTracks().forEach(track => track.stop());
+    }
     setRoomId("")
     navigate("/")
     toast({

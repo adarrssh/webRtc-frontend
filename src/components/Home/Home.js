@@ -146,7 +146,15 @@ export const Home = () => {
                                 </MenuList>
                             </Menu>
                             :
-                            <Image src={profileImage} borderRadius={"50%"} height={"50px"}></Image>
+                            <Button
+                            padding={"1.5rem"}
+                            backgroundColor={"#54B435"}
+                            color={"white"}
+                            border={"1px"}
+                            borderColor={"#54B435"}
+                            _hover={{ backgroundColor: "none" }}
+                            onClick={()=>navigate("/login")}
+                            >Login/SignUp</Button>
 
                     }
                 </Box>
