@@ -227,13 +227,13 @@ export const RoomPage = () => {
   };
 
   const handleKeyDown = (event) => {
-    if(event.key === "Enter"){
+    if (event.key === "Enter") {
       event.preventDefault()
       sendMessage()
     }
   }
 
-  const handleSendButtonClick = () =>{
+  const handleSendButtonClick = () => {
     sendMessage()
   }
 
@@ -271,26 +271,30 @@ export const RoomPage = () => {
       cameraOn ?
         <Box
           width={{ base: "90%" }}
-          height={{ base: "40%", sm: "40%", md: "40%", lg: "60%" }}
-        // backgroundColor={"#2e2e2e"}
+          height={{ base: "240px", sm: "40%", md: "40%", lg: "60%" }}
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
         >
           <video
             className="video"
             autoPlay
             playsInline
-            muted
             ref={(videoRef) => videoRef && (videoRef.srcObject = myStream)}
           />
         </Box>
         :
         <Box
-          width={{ base: "60%", sm: "90%", "2xl": "600px" }}
-          height={{ base: "40%", sm: "40%", md: "40%", lg: "60%" }}
+          // width={{ base: "90%", sm: "90%", "2xl": "600px" }}
+          width={"90%"}
+          // height={{ base: "80%", sm: "60%", md: "90%", lg: "100%" }}
+          height={"90%"}
           display={"flex"}
           justifyContent={"center"}
           alignItems={"center"}
           flexDirection={"column"}
           backgroundColor={"#2e2e2e"}
+          borderRadius={"8px"}
         >
           <Box
             height={"10%"}
@@ -300,7 +304,7 @@ export const RoomPage = () => {
             paddingRight={"20px"}
             paddingTop={"20px"}
           >
-            { !micOn && <FontAwesomeIcon icon={faMicrophoneSlash} color="white" /> }
+            {!micOn && <FontAwesomeIcon icon={faMicrophoneSlash} color="white" />}
 
           </Box>
           <Box
@@ -314,56 +318,61 @@ export const RoomPage = () => {
           </Box>
         </Box>
     ),
-    [myStream,micOn,cameraOn]
+    [myStream, micOn, cameraOn]
   );
 
   const renderSendvideo = useMemo(
     () => (
-      senderCameraOn ? 
-      <Box
-        width={{ base: "90%" }}
-        height={{ base: "40%", sm: "40%", md: "40%", lg: "60%" }}
-      // backgroundColor={"#2e2e2e"}
-      >
-        <video
-          className="video"
-          autoPlay
-          playsInline
-          ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
-        />
-      </Box> :
+      senderCameraOn ?
         <Box
-        width={{ base: "60%", sm: "90%", "2xl": "600px" }}
-        height={{ base: "40%", sm: "40%", md: "40%", lg: "60%" }}
-        display={"flex"}
-        justifyContent={"center"}
-        alignItems={"center"}
-        flexDirection={"column"}
-        backgroundColor={"#2e2e2e"}
-      >
-        <Box
-          height={"10%"}
-          width={"100%"}
-          display={"flex"}
-          justifyContent={"flex-end"}
-          paddingRight={"20px"}
-          paddingTop={"20px"}
-        >
-          { !senderMicOn && <FontAwesomeIcon icon={faMicrophoneSlash} color="white" /> }
-
-        </Box>
-        <Box
-          height={"90%"}
-          width={"100%"}
+          width={{ base: "90%" }}
+          height={{ base: "240px", sm: "40%", md: "40%", lg: "60%" }}
           display={"flex"}
           justifyContent={"center"}
           alignItems={"center"}
         >
-          <Image src={cameraOffRightAvatar}></Image>
+          <video
+            className="video"
+            autoPlay
+            playsInline
+            ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
+          />
+        </Box> :
+        <Box
+          // width={{ base: "90%", sm: "90%", "2xl": "600px" }}
+          width={"90%"}
+          // height={{ base: "80%", sm: "60%", md: "90%", lg: "100%" }}
+          height={"90%"}
+          display={"flex"}
+          justifyContent={"center"}
+          alignItems={"center"}
+          flexDirection={"column"}
+          backgroundColor={"#2e2e2e"}
+          borderRadius={"8px"}
+        >
+          <Box
+            height={"10%"}
+            width={"100%"}
+            display={"flex"}
+            justifyContent={"flex-end"}
+            paddingRight={"20px"}
+            paddingTop={"20px"}
+          >
+            {!senderMicOn && <FontAwesomeIcon icon={faMicrophoneSlash} color="white" />}
+
+          </Box>
+          <Box
+            height={"90%"}
+            width={"100%"}
+            display={"flex"}
+            justifyContent={"center"}
+            alignItems={"center"}
+          >
+            <Image src={cameraOffRightAvatar}></Image>
+          </Box>
         </Box>
-      </Box>
     ),
-    [remoteStream,senderMicOn,senderCameraOn]
+    [remoteStream, senderMicOn, senderCameraOn]
   );
 
   return (
@@ -387,9 +396,12 @@ export const RoomPage = () => {
         >
           <Box
             width={"100%"}
-            height={"90vh"}
+            height={{ base: "90vh", sm: "90vh" }}
             display={"flex"}
             flexDirection={{ base: "column", sm: "row" }}
+            alignItems={{ base: "flex-start", sm: "center" }}
+            justifyContent={"center"}
+            borderRadius={"8px"}
           >
             {(isAdmin && callStarted) || (!isAdmin && callAccepted) ? (
               <>
@@ -399,6 +411,9 @@ export const RoomPage = () => {
                   justifyContent={"center"}
                   alignItems={"center"}
                   padding={1}
+                  // backgroundColor={"pink"}
+                  height={!cameraOn ? { base: "30%", sm: "45%", md: "55%", lg: "70%", "xl": "90%", "2xl": "90%" } : ""}
+                  width={!cameraOn ? "100%" : ""}
                 >
                   {myStream && renderVideo}
                 </Box>
@@ -409,6 +424,9 @@ export const RoomPage = () => {
                   justifyContent={"center"}
                   alignItems={"center"}
                   padding={1}
+                  // backgroundColor={"pink"}
+                  height={!senderCameraOn ? { base: "30%", sm: "45%", md: "55%", lg: "70%", "xl": "90%", "2xl": "90%" } : ""}
+                  width={!senderCameraOn ? "100%" : ""}
                 >
                   {renderSendvideo}
                 </Box>}
