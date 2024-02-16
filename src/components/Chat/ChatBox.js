@@ -14,7 +14,7 @@ import React, { useEffect, useRef } from "react";
   import SingleChat from "../Chat/SingleChat";
 
   
-const ChatBox = ({openChat,setopenChat,chats, setMessage, sendMessage,message}) => {
+const ChatBox = ({openChat,setopenChat,chats, setMessage,handleKeyDown,handleSendButtonClick,message}) => {
 
   const messageEl = useRef(null);
 
@@ -120,7 +120,7 @@ const ChatBox = ({openChat,setopenChat,chats, setMessage, sendMessage,message}) 
             focusBorderColor="transparent"
             value={message}
             onChange={(event) => setMessage(event.target.value)}
-            onKeyDown={sendMessage}
+            onKeyDown={handleKeyDown}
           />
           <Button
             height={"100%"}
@@ -129,8 +129,9 @@ const ChatBox = ({openChat,setopenChat,chats, setMessage, sendMessage,message}) 
             _hover={{
               backgroundColor: "#ececec",
             }}
+            onClick={handleSendButtonClick}
           >
-            {/* <FontAwesomeIcon icon={faPaperPlane} /> */}
+            <FontAwesomeIcon icon={faPaperPlane} />
           </Button>
         </Box>
       </Box>

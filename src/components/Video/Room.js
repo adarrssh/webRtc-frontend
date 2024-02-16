@@ -209,7 +209,7 @@ export const RoomPage = () => {
   ]);
 
   const sendMessage = (event) => {
-    if (event.key === "Enter" && message.length > 0) {
+    if (message.length > 0) {
       if (socket) {
         setChats([...chats, { name: "you", message }]);
         socket.emit("send-message", {
@@ -221,6 +221,17 @@ export const RoomPage = () => {
       }
     }
   };
+
+  const handleKeyDown = (event) => {
+    if(event.key === "Enter"){
+      event.preventDefault()
+      sendMessage()
+    }
+  }
+
+  const handleSendButtonClick = () =>{
+    sendMessage()
+  }
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -515,6 +526,8 @@ export const RoomPage = () => {
           message={message}
           setMessage={setMessage}
           sendMessage={sendMessage}
+          handleKeyDown={handleKeyDown}
+          handleSendButtonClick={handleSendButtonClick}
         />
       </Box>
     </Box>
