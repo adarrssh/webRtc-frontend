@@ -269,20 +269,13 @@ export const RoomPage = () => {
     () => (
 
       cameraOn ?
-        <Box
-          width={{ base: "90%" }}
-          height={{ base: "240px", sm: "40%", md: "40%", lg: "60%" }}
-          display={"flex"}
-          justifyContent={"center"}
-          alignItems={"center"}
-        >
+
           <video
             className="video"
             autoPlay
             playsInline
             ref={(videoRef) => videoRef && (videoRef.srcObject = myStream)}
           />
-        </Box>
         :
         <Box
           // width={{ base: "90%", sm: "90%", "2xl": "600px" }}
@@ -324,25 +317,15 @@ export const RoomPage = () => {
   const renderSendvideo = useMemo(
     () => (
       senderCameraOn ?
-        <Box
-          width={{ base: "90%" }}
-          height={{ base: "240px", sm: "40%", md: "40%", lg: "60%" }}
-          display={"flex"}
-          justifyContent={"center"}
-          alignItems={"center"}
-        >
+
           <video
             className="video"
             autoPlay
             playsInline
             ref={(videoRef) => videoRef && (videoRef.srcObject = remoteStream)}
           />
-        </Box> :
+          :
         <Box
-          // width={{ base: "90%", sm: "90%", "2xl": "600px" }}
-          width={"90%"}
-          // height={{ base: "80%", sm: "60%", md: "90%", lg: "100%" }}
-          height={"90%"}
           display={"flex"}
           justifyContent={"center"}
           alignItems={"center"}
@@ -382,11 +365,13 @@ export const RoomPage = () => {
       height={"100vh"}
       backgroundColor={"#121212"}
       overflowX={"hidden"}
+      // overflowY={"hidden"}
     >
       <Box
         display={"flex"}
         justifyContent={"center"}
         width={"100%"}
+        height={"100%"}
       >
         <Box
           width={
@@ -398,58 +383,33 @@ export const RoomPage = () => {
             width={"100%"}
             height={{ base: "90vh", sm: "90vh" }}
             display={"flex"}
-            flexDirection={{ base: "column", sm: "row" }}
-            alignItems={{ base: "flex-start", sm: "center" }}
-            justifyContent={"center"}
+            flexDirection={{ base: "column", md: "row" }}
+            alignItems={"center"}
+            // justifyContent={"space-evenly"}
             borderRadius={"8px"}
+            // overflowY={"hidden"}
           >
-            {(isAdmin && callStarted) || (!isAdmin && callAccepted) ? (
-              <>
-                <Box
-                  flex={"1"}
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  padding={1}
-                  // backgroundColor={"pink"}
-                  height={!cameraOn ? { base: "30%", sm: "45%", md: "55%", lg: "70%", "xl": "90%", "2xl": "90%" } : ""}
-                  width={!cameraOn ? "100%" : ""}
-                >
-                  {myStream && renderVideo}
-                </Box>
 
-                {remoteStream && <Box
-                  flex={"1"}
-                  display={"flex"}
-                  justifyContent={"center"}
-                  alignItems={"center"}
-                  padding={1}
-                  // backgroundColor={"pink"}
-                  height={!senderCameraOn ? { base: "30%", sm: "45%", md: "55%", lg: "70%", "xl": "90%", "2xl": "90%" } : ""}
-                  width={!senderCameraOn ? "100%" : ""}
-                >
-                  {renderSendvideo}
-                </Box>}
-              </>
-            ) : (
-              <>
+            {/* left box  */}
+            <Box
+              flex={"1"}
+              height={"100%"}
+              width={"100%"}
+              display={"flex"}
+              justifyContent={"center"}
+              alignItems={{base:"center",md:"center"}}
+            >
+              <Box
+                backgroundColor={"#2e2e2e"}
+                width={{base:"90%",sm:"400px",md:"90%"}}
+                height={{base:"70%",sm:"200px",md:"60%"}}
+                display={{base:"flex",md:""}}
+                justifyContent={{base:"flex",md:""}}
+                alignItems={{base:"center",md:""}}
+                
+              >
 
-                {isAdmin && (remoteSocketId === null) && !callStarted &&
-                  (
-                    <Box
-                      width={"100%"}
-                      height={"100%"}
-                      display={"flex"}
-                      flexDirection={"column"}
-                      justifyContent={"center"}
-                      alignItems={"center"}
-                    >
-
-                      <Text color={"white"} fontWeight={"bold"} >Please wait while the other user joins....</Text>
-                      <Text color={"white"} fontWeight={"bold"} display={{ base: "block", sm: "none" }} >Your room id is : {roomId}</Text>
-                    </Box>
-                  )
-                }
+                {myStream && renderVideo}
 
                 {isAdmin && remoteSocketId && !callStarted &&
                   (
@@ -472,22 +432,6 @@ export const RoomPage = () => {
                   )
                 }
 
-
-                {!isAdmin && !callAccepted && !remoteStream &&
-                  (
-                    <Box
-                      width={"100%"}
-                      height={"100%"}
-
-                      display={"flex"}
-                      justifyContent={"center"}
-                      alignItems={"center"}
-                    >
-
-                      <Text color={"white"} fontWeight={"bold"}>Your call will start once the admin starts the call</Text>
-                    </Box>)
-                }
-
                 {myStream && !isAdmin &&
                   (
                     <Box
@@ -507,9 +451,32 @@ export const RoomPage = () => {
                       </Button>
                     </Box>
                   )
-                }
-              </>
-            )}
+                } 
+              </Box>
+            </Box>
+            <Box
+              flex={"1"}
+              height={"100%"}
+              width={"100%"}
+              display={"flex"}
+              justifyContent={"center"}
+              alignItems={{base:"center",md:"center"}}
+            >
+              {/* right box  */}
+              <Box
+                backgroundColor={"#2e2e2e"}
+                width={{base:"90%",sm:"400px",md:"90%"}}
+                height={{base:"70%",sm:"200px",md:"60%"}}
+                display={{base:"flex",md:""}}
+                justifyContent={{base:"flex",md:""}}
+                alignItems={{base:"center",md:""}}
+                >
+
+
+                {remoteStream && renderSendvideo}
+              </Box>
+
+            </Box>
           </Box>
 
           {/* bottom control section  */}
@@ -558,3 +525,46 @@ export const RoomPage = () => {
     </Box>
   );
 };
+
+
+// {isAdmin && remoteSocketId && !callStarted &&
+//   (
+//     <Box
+//       width={"100%"}
+//       height={"100%"}
+//       display={"flex"}
+//       justifyContent={"center"}
+//       alignItems={"center"}
+
+//     >
+
+//       <Button
+//         onClick={handleCallUser}
+//         display={callStarted ? "none" : "block"}
+//       >
+//         Start the CALL
+//       </Button>
+//     </Box>
+//   )
+// }
+
+// {myStream && !isAdmin &&
+//   (
+//     <Box
+//       width={"100%"}
+//       height={"100%"}
+
+//       display={"flex"}
+//       justifyContent={"center"}
+//       alignItems={"center"}
+//     >
+
+//       <Button
+//         onClick={sendStreams}
+//         display={callAccepted ? "none" : "block"}
+//       >
+//         Click here to Accept the Call
+//       </Button>
+//     </Box>
+//   )
+// } 
