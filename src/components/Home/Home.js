@@ -1,14 +1,13 @@
 import { Box, Button, Container, Flex, Image, Input, Menu, MenuButton, MenuItem, MenuList, Text, Tooltip, useToast } from '@chakra-ui/react'
 import React, { useCallback, useEffect, useState } from 'react'
-import profileImage from "../../Image/Profile.png";
+import profileImage from "../../Image/cameraOffLeftAvatar.png";
 import HomeImage from "../../Image/HomePageImage.png";
 import Video from "../../Image/VideoCamera.png";
 import Keyboard from "../../Image/Keyboard.png";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from 'react-router-dom';
-import { Socket } from 'socket.io-client';
 import { useSocket } from '../../context/SocketProvider';
-import { BellIcon, ChevronDownIcon } from '@chakra-ui/icons'
+import { ChevronDownIcon } from '@chakra-ui/icons'
 
 
 
@@ -135,10 +134,12 @@ export const Home = () => {
                         localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username") ?
 
                             <Menu>
-                                <MenuButton as={Button} rightIcon={<ChevronDownIcon />} backgroundColor={"white"}
+                                <MenuButton as={Button} rightIcon={<ChevronDownIcon />}
+                                backgroundColor={"white"}
                                     _hover={{ backgroundColor: "white" }}
                                 >
                                     <Image src={profileImage} borderRadius={"50%"} height={"30px"}></Image>
+
                                 </MenuButton>
                                 <MenuList _hover={{ backgroundColor: "white" }} backgroundColor={"white"}>
                                     <MenuItem>{localStorage.getItem("email")}</MenuItem>
