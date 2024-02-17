@@ -277,7 +277,7 @@ export const RoomPage = () => {
           alignItems={"center"}
           position={"relative"}
         >
-          {!micOn &&
+          {!micOn && remoteStream &&
 
             <Box position={"absolute"}
               top={5}
@@ -346,7 +346,7 @@ export const RoomPage = () => {
           position={"relative"}
         >
 
-          {!senderMicOn &&
+          {!senderMicOn && remoteStream &&
 
             <Box
               position={"absolute"}
