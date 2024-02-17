@@ -275,7 +275,20 @@ export const RoomPage = () => {
           display={"flex"}
           justifyContent={"center"}
           alignItems={"center"}
+          position={"relative"}
         >
+          {!micOn &&
+
+            <Box position={"absolute"}
+              top={5}
+              right={5}
+              zIndex={99999}
+            >
+              <FontAwesomeIcon icon={faMicrophoneSlash} color="grey" />
+            </Box>
+
+          }
+
           <video
             className="video"
             autoPlay
@@ -330,7 +343,23 @@ export const RoomPage = () => {
           display={"flex"}
           justifyContent={"center"}
           alignItems={"center"}
+          position={"relative"}
         >
+
+          {!senderMicOn &&
+
+            <Box
+              position={"absolute"}
+              top={5}
+              right={5}
+              zIndex={99999}
+            >
+
+              <FontAwesomeIcon icon={faMicrophoneSlash} color="grey" />
+            </Box>
+
+          }
+
           <video
             className="video"
             autoPlay
@@ -411,7 +440,6 @@ export const RoomPage = () => {
                   justifyContent={"center"}
                   alignItems={"center"}
                   padding={1}
-                  // backgroundColor={"pink"}
                   height={!cameraOn ? { base: "30%", sm: "45%", md: "55%", lg: "70%", "xl": "90%", "2xl": "90%" } : ""}
                   width={!cameraOn ? "100%" : ""}
                 >
@@ -424,7 +452,6 @@ export const RoomPage = () => {
                   justifyContent={"center"}
                   alignItems={"center"}
                   padding={1}
-                  // backgroundColor={"pink"}
                   height={!senderCameraOn ? { base: "30%", sm: "45%", md: "55%", lg: "70%", "xl": "90%", "2xl": "90%" } : ""}
                   width={!senderCameraOn ? "100%" : ""}
                 >
