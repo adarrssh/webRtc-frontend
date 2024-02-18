@@ -23,7 +23,7 @@ const Login = () => {
         setPicLoading(true);
         if (!email || !password) {
           toast({
-            title: "Please Fill all the Feilds",
+            title: "Please fill all the fields",
             status: "warning",
             duration: 5000,
             isClosable: true,
@@ -62,7 +62,7 @@ const Login = () => {
         } catch (error) {
           console.error(error.response.data)
           toast({
-            title: "Error Occured!",
+            title: "Error Occurred!",
             description: `${error.response.data.error}`,
             status: "error",
             duration: 5000,

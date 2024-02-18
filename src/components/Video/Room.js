@@ -43,7 +43,7 @@ export const RoomPage = () => {
 
   const handleCallUser = useCallback(async () => {
     toast({
-      title: "Please wait while the user accept the call",
+      title: "Please wait while the other user accepts the call",
       status: "success",
       duration: 4000,
       isClosable: true,
@@ -473,7 +473,7 @@ export const RoomPage = () => {
                     >
 
                       <Text color={"white"} fontWeight={"bold"} >Please wait while the other user joins....</Text>
-                      <Text color={"white"} fontWeight={"bold"} display={{ base: "block", sm: "none" }} >Your room id is : {roomId}</Text>
+                      <Text color={"white"} fontWeight={"bold"} display={{ base: "block", md: "none" }} >Your room id is : {roomId}</Text>
                     </Box>
                   )
                 }
@@ -511,7 +511,7 @@ export const RoomPage = () => {
                       alignItems={"center"}
                     >
 
-                      <Text color={"white"} fontWeight={"bold"}>Your call will start once the admin starts the call</Text>
+                      <Text color={"white"} fontWeight={"bold"}>Call Pending: Waiting for the admin to start the call</Text>
                     </Box>)
                 }
 

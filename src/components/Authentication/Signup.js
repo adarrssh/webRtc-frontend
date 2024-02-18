@@ -17,7 +17,7 @@ const Signup = () => {
     const submitHandler = async () => {
         if (!name || !email || !password) {
             toast({
-                title: "Please Fill all the Feilds",
+                title: "Please fill all the fields",
                 status: "warning",
                 duration: 5000,
                 isClosable: true,
@@ -56,7 +56,7 @@ const Signup = () => {
         } catch (error) {
             console.error(error)
             toast({
-                title: "Error Occured!",
+                title: "Error Occurred!",
                 description: `${error.response.data.error}`,
                 status: "error",
                 duration: 5000,

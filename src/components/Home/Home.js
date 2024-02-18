@@ -39,12 +39,11 @@ export const Home = () => {
 
         }
     }
-
     const handleJoinRoom = useCallback(
         (data) => {
             const { email, room } = data;
             toast({
-                title:  isAdmin ? "Call started: waiting for the other user to join":"Call Started: waiting for the user to start the call",
+                title:  "Entered the room successfully",
                 status: "success",
                 duration: 4000,
                 isClosable: true,
