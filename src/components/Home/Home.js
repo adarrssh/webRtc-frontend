@@ -1,12 +1,104 @@
-import { Box, Button, Container, Flex, Image, Input, Text } from '@chakra-ui/react'
-import React from 'react'
-import profileImage from "../../Image/Profile.png";
+import { Box, Button, Container, Flex, Image, Input, Menu, MenuButton, MenuItem, MenuList, Text, Tooltip, useToast } from '@chakra-ui/react'
+import React, { useCallback, useEffect, useState } from 'react'
+import profileImage from "../../Image/cameraOffLeftAvatar.png";
 import HomeImage from "../../Image/HomePageImage.png";
 import Video from "../../Image/VideoCamera.png";
 import Keyboard from "../../Image/Keyboard.png";
+import { v4 as uuid } from "uuid";
+import { useNavigate } from 'react-router-dom';
+import { useSocket } from '../../context/SocketProvider';
+import { ChevronDownIcon } from '@chakra-ui/icons'
+
 
 
 export const Home = () => {
+    const { socket, userDetails, setUserDetails , isAdmin, setIsAdmin, roomId, setRoomId } = useSocket();
+    const [currentDateTime, setCurrentDateTime] = useState(new Date());
+    const [inputRoomId, setInputRoomId] = useState("");
+    const uniqueRoomId = (uuid()).slice(0, 8);
+    const navigate = useNavigate()
+    const toast = useToast()
+    const createNewMeeting = () => {
+        if (localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")) {
+            setIsAdmin(true)
+            setRoomId(uniqueRoomId)
+            socket.emit("room:join", { email: userDetails.email, room: uniqueRoomId })
+        } else {
+            navigate("/login")
+        }
+    }
+    const joinExistingRoom = () => {
+        if (localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username")) {
+
+            if (inputRoomId.length) {
+                setRoomId(inputRoomId)
+                socket.emit("room:join", { email: userDetails.email, room: inputRoomId })
+            }
+        } else {
+            navigate("/login")
+
+        }
+    }
+    const handleJoinRoom = useCallback(
+        (data) => {
+            const { email, room } = data;
+            toast({
+                title:  "Entered the room successfully",
+                status: "success",
+                duration: 4000,
+                isClosable: true,
+                position: "bottom",
+              });
+            navigate(`/room/${room}`);
+        },
+        [navigate]
+    );  
+
+
+    useEffect(()=>{
+        if(roomId){
+            setRoomId("")
+        }
+    },[])
+    useEffect(() => {
+        socket.on("room:join", handleJoinRoom);
+        return () => {
+            socket.off("room:join", handleJoinRoom);
+        };
+    }, [socket, handleJoinRoom]);
+
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            setCurrentDateTime(new Date());
+        }, 1000); // Update every second
+
+        return () => clearInterval(intervalId); // Cleanup interval on component unmount
+    }, []);
+
+    const formatDate = (date) => {
+        const options = {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            // Remove seconds from formatting options
+        };
+        const formattedDate = date.toLocaleDateString(undefined, options);
+        // Remove "at" from the formatted date
+        const modifiedFormattedDate = formattedDate.replace(" at", "");
+
+        return modifiedFormattedDate;
+    };
+
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('email');
+        localStorage.removeItem('username');
+        navigate('/login')
+    }
     return (
         <Container centerContent maxWidth={"1500px"} height={"100vh"}>
             <Box
@@ -18,110 +110,166 @@ export const Home = () => {
             >
                 <Box
                     paddingTop={4}
-                    paddingLeft={10}
+                    paddingLeft={{ base: 2, sm: 10 }}
                     color={"#54B435"}
                     fontWeight={"bold"}
-                    fontSize={"2rem"}
+                    fontSize={{ base: "1.5rem", sm: "2rem" }}
                 >
-                    Meet Cute
+                    Meetify
                 </Box>
                 <Box
                     paddingTop={4}
-                    paddingRight={10}
+                    paddingRight={{ base: 3, sm: 10 }}
+                    display={"flex"}
+                    justifyContent={"space-between"}
+                // alignItems={"center"}
                 >
-                    <Image src={profileImage}></Image>
+                    <Text
+                        marginRight={"20px"}
+                        paddingTop={2}
+                        display={{ base: "none", lg: "block" }}
+                    >{formatDate(currentDateTime)}</Text>
+                    {
+                        localStorage.getItem("token") && localStorage.getItem("email") && localStorage.getItem("username") ?
+
+                            <Menu>
+                                <MenuButton as={Button} rightIcon={<ChevronDownIcon />}
+                                backgroundColor={"white"}
+                                    _hover={{ backgroundColor: "white" }}
+                                >
+                                    <Image src={profileImage} borderRadius={"50%"} height={"30px"}></Image>
+
+                                </MenuButton>
+                                <MenuList _hover={{ backgroundColor: "white" }} backgroundColor={"white"}>
+                                    <MenuItem>{localStorage.getItem("email")}</MenuItem>
+                                    <MenuItem onClick={logout}>Logout</MenuItem>
+                                </MenuList>
+                            </Menu>
+                            :
+                            <Button
+                            padding={"1.5rem"}
+                            backgroundColor={"#54B435"}
+                            color={"white"}
+                            border={"1px"}
+                            borderColor={"#54B435"}
+                            _hover={{ backgroundColor: "none" }}
+                            onClick={()=>navigate("/login")}
+                            >Login/SignUp</Button>
+
+                    }
                 </Box>
             </Box>
 
+            {/* main content body */}
             <Box
                 width={"100%"}
-                height={"3rem"}
                 display={"flex"}
                 flexDir={"row"}
-                justifyContent={"space-between"}
+                marginTop={"10vh"}
+                justifyContent={"center"}
 
-                // backgroundColor={"red"}
-                marginTop={"5vh"}
             >
+
+                {/* left box */}
                 <Box
 
-                    paddingLeft={10}
+                    paddingLeft={{base:2,md:10}}
                     flex={2}
+                    width={"100%"}
                     paddingRight={5}
-                    m={{ base: 0, sm: 4 }} p={{ base: 0, sm: 4 }}
+                    display={"flex"}
+                    flexDir={"column"}
+                    justifyContent={"center"}
                 >
+                    <Box
+                        textAlign={{ base: "center", lg: "left" }}
+                    >
 
-                    <Text paddingTop={"1rem"} fontSize={"1.9rem"} fontWeight={"bold"}>From boardroom meetings to virtual <br /> catch-ups, make every call count</Text>
-                    <Text paddingTop={"2rem"} fontSize={"1.2rem"}>Experience the ultimate in video calling conferenece <br /> with our platform</Text>
 
+                        <Text paddingTop={"1rem"} fontSize={{ base: "1.4rem", sm: "1.9rem" }} fontWeight={"bold"}>From boardroom meetings to virtual <br /> catch-ups, make every call count</Text>
+                        <Text paddingTop={"2rem"} fontSize={{ base: "0.8rem", sm: "1.2rem" }}>Experience the ultimate in video calling conferenece <br /> with our platform</Text>
+                    </Box>
                     <Box
                         display={"flex"}
                         flexDir={"row"}
-                        justifyContent={"flex-start"}
-                        paddingTop={"1rem"}
+                        justifyContent={{ base: "center", sm: "center", lg: "flex-start" }}
+                        paddingTop={"3rem"}
                         flexDirection={{ base: "column", sm: "row" }}
 
                     >
                         <Button
                             padding={"1.5rem"}
                             backgroundColor={"#54B435"}
+                            textAlign={{ base: "left" }}
                             color={"white"}
                             border={"1px"}
                             borderColor={"#54B435"}
-                            _hover={{backgroundColor:"none"}}
+                            _hover={{ backgroundColor: "none" }}
+                            display={{ base: "flex" }}
+                            justifyContent={{ base: "center" , sm:"flex-start" }}
+                            onClick={createNewMeeting}
+                            minWidth={"fit-content"}
                         >
-                            <Image src={Video} />
-                            <Text paddingLeft={"1rem"}>
+                            <Image display={{ base: "none", md: "block" }} src={Video} />
+                            <Text paddingLeft={"1rem"} paddingRight={"1rem"}
+                            >
                                 New Meeting
                             </Text>
                         </Button>
 
                         <Button
-                            marginLeft={"1rem"}
+                            marginLeft={{ sm: "1rem" }}
+                            marginTop={{ base: "1rem", sm: "0" }}
                             padding={"1.5rem"}
                             border={"1px"}
                             borderColor={"#54B435"}
                             backgroundColor={"white"}
                             color={"black"}
-                            _hover={{backgroundColor:"none"}}
+                            _hover={{ backgroundColor: "white" }}
+                            _o
                         >
-                            <Image 
-                            src={Keyboard}
-                            color={"black"}
-                            ></Image>
+                            <Image
+                                src={Keyboard}
+                                color={"black"}
+                                display={{ base: "none", md: "block" }}
+                            />
 
                             <Input
-                         
-                            paddingLeft={"10px"}
-                            border={"none"}
-                            placeholder={'Enter a code'}
-                            backgroundColor={"none"}
-                            _focusVisible={{
-                                outline: "none",
-                                backgroundColor:"none"
-                           }}
+                                width={"100%"}
+                                paddingLeft={"10px"}
+                                border={"none"}
+                                placeholder={'Enter a meeting code'}
+                                _focusVisible={{
+                                    outline: "none",
+                                    backgroundColor: "white"
+                                }}
+                                value={inputRoomId}
+                                onChange={(e) => setInputRoomId(e.target.value)}
                             />
-                            
-                           
-                        </Button>
 
-                        <Button 
-                        
-                        marginLeft={"1rem"}
-                        padding={"1.5rem"}
-                        color={"white"}
-                        backgroundColor={"#54B435"}
-                        border={"1px"}
-                        borderColor={"#54B435"}
-                        _hover={{backgroundColor:"none"}}
-                        
-                        >Join</Button>
+
+                        </Button>
+                        {inputRoomId ? <Button
+                            marginTop={{base:"15px",sm:"0"}}
+                            marginLeft={{base:"0",sm:"1rem"}}
+                            padding={"1.5rem"}
+                            color={"white"}
+                            backgroundColor={"#54B435"}
+                            border={"1px"}
+                            borderColor={"#54B435"}
+                            _hover={{ backgroundColor: "none" }}
+                            onClick={joinExistingRoom}
+                        >Join</Button> : <></>}
+
+
 
                     </Box>
 
                 </Box>
+
+                {/* right box */}
                 <Box
-                    display={{ base: "none", md: "block" }}
+                    display={{ base: "none", lg: "block" }}
                     paddingRight={10}
                     flex={1}>
                     <Image src={HomeImage}></Image>

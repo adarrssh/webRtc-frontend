@@ -8,17 +8,22 @@ const Login = () => {
     const [show, setShow] = useState(false);
     const handleClick = () => setShow(!show);
 
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [picLoading, setPicLoading] = useState(false);
     const toast = useToast()
     const navigate = useNavigate()
+
+    const guestUserLogin = () => {
+      setEmail("guestUser@1234")
+      setPassword("1234")
+    }
 
     const submitHandler = async () => {
         setPicLoading(true);
         if (!email || !password) {
           toast({
-            title: "Please Fill all the Feilds",
+            title: "Please fill all the fields",
             status: "warning",
             duration: 5000,
             isClosable: true,
@@ -36,11 +41,11 @@ const Login = () => {
           };
     
           const { data } = await axios.post(
-            `${process.env.REACT_APP_BASE_API_URL}/api/user/login`,
+            `${process.env.REACT_APP_BASE_URL}/auth/login`,
             { email, password },
             config
           );
-        
+          
           toast({
             title: "Login Successful",
             status: "success",
@@ -48,14 +53,17 @@ const Login = () => {
             isClosable: true,
             position: "bottom",
           });
-        //   setUser(data);
-          localStorage.setItem("userInfo", JSON.stringify(data));
+
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('email', data.user.email);
+            localStorage.setItem('username', data.user.username);
           setPicLoading(false);
-          navigate("/chats");
+          navigate("/");
         } catch (error) {
+          console.error(error.response.data)
           toast({
-            title: "Error Occured!",
-            description: error.response.data.message,
+            title: "Error Occurred!",
+            description: `${error.response.data.error}`,
             status: "error",
             duration: 5000,
             isClosable: true,
@@ -73,7 +81,7 @@ const Login = () => {
                     placeholder="Enter You Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    focusBorderColor='#6f4fb3'
+                    focusBorderColor='#7bcc7b'
 
                 />
             </FormControl>
@@ -85,7 +93,7 @@ const Login = () => {
                         placeholder="Enter You password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        focusBorderColor='#6f4fb3'
+                        focusBorderColor='#7bcc7b'
                     />
                     <InputRightElement width="4.5rem">
                         <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -96,27 +104,25 @@ const Login = () => {
             </FormControl>
             <Button
                 width="100%"
-                backgroundColor={'#6f4fb3'}
+                backgroundColor="#7bcc7b"
                 color={'white'}
                 style={{ marginTop: 15 }}
                 onClick={submitHandler}
                 isLoading={picLoading}
-                _hover={{bg:'white', color:'#6f4fb3', border : '1px', borderColor:'#6f4fb3'}}
+                _hover={{bg:'white', color:'#7bcc7b', border : '1px', borderColor:'#7bcc7b'}}
             >
                 Login
             </Button>
             <Button
-                variant="outline"
-                borderColor={"#6f4fb3"}
-                color='#6f4fb3'
                 width="100%"
-                onClick={() => {
-                    setEmail("guest@example.com");
-                    setPassword("123456");
-                }}
-                _hover={{color:'white', bg:'#6f4fb3', border : '1px', borderColor:'#6f4fb3'}}
+                backgroundColor="#7bcc7b"
+                color={'white'}
+                style={{ marginTop: 15 }}
+                onClick={guestUserLogin}
+                isLoading={picLoading}
+                _hover={{bg:'white', color:'#7bcc7b', border : '1px', borderColor:'#7bcc7b'}}
             >
-                Sign in as a guest
+                Get guest user credentials
             </Button>
         </VStack>
     )
