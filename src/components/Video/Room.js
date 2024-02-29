@@ -277,6 +277,7 @@ export const RoomPage = () => {
           justifyContent={"center"}
           alignItems={"center"}
           position={"relative"}
+          backgroundColor={"yellow"}
         >
           {!micOn && remoteStream &&
 
@@ -299,9 +300,7 @@ export const RoomPage = () => {
         </Box>
         :
         <Box
-          // width={{ base: "90%", sm: "90%", "2xl": "600px" }}
           width={"90%"}
-          // height={{ base: "80%", sm: "60%", md: "90%", lg: "100%" }}
           height={"90%"}
           display={"flex"}
           justifyContent={"center"}
@@ -345,6 +344,7 @@ export const RoomPage = () => {
           justifyContent={"center"}
           alignItems={"center"}
           position={"relative"}
+          backgroundColor={"yellow"}
         >
 
           {!senderMicOn && remoteStream &&
@@ -443,6 +443,7 @@ export const RoomPage = () => {
                   padding={1}
                   height={!cameraOn ? { base: "30%", sm: "45%", md: "55%", lg: "70%", "xl": "90%", "2xl": "90%" } : ""}
                   width={!cameraOn ? "100%" : ""}
+                  backgroundColor={"pink"}
                 >
                   {myStream && renderVideo}
                 </Box>
@@ -455,6 +456,8 @@ export const RoomPage = () => {
                   padding={1}
                   height={!senderCameraOn ? { base: "30%", sm: "45%", md: "55%", lg: "70%", "xl": "90%", "2xl": "90%" } : ""}
                   width={!senderCameraOn ? "100%" : ""}
+                  backgroundColor={"pink"}
+
                 >
                   {renderSendvideo}
                 </Box>}
