@@ -1,12 +1,14 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSocket } from "../context/SocketProvider";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMicrophone } from "@fortawesome/free-solid-svg-icons";
 
 const LobbyScreen = () => {
   const [email, setEmail] = useState("");
   const [room, setRoom] = useState("");
 
-  const socket = useSocket();
+  const {socket} = useSocket();
   const navigate = useNavigate();
 
   const handleSubmitForm = useCallback(
@@ -49,11 +51,12 @@ const LobbyScreen = () => {
           type="text"
           id="room"
           value={room}
+          
           onChange={(e) => setRoom(e.target.value)}
         />
         <br />
         <button>Join</button>
-      </form>
+        </form>
     </div>
   );
 };
