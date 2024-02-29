@@ -1,12 +1,9 @@
 .video{
     border-radius: 8px;
     transform: rotateY(180deg);
-    /* height: 100%;
-    width: 100%; */
-    /* Safari and Chrome */
     -webkit-transform:rotateY(180deg);
-    /* Firefox */
     -moz-transform:rotateY(180deg); 
+    height: 300px;
 }
 
 @media only screen and (max-heigt: 480px) {

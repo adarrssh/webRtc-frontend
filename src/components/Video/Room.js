@@ -11,6 +11,7 @@ import cameraOffLeftAvatar from '../../Image/cameraOffLeftAvatar.png'
 import cameraOffRightAvatar from '../../Image/cameraOffRightAvatar.png'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMicrophoneSlash } from "@fortawesome/free-solid-svg-icons";
+import '../../App.css'
 
 export const RoomPage = () => {
   const { socket, isAdmin, roomId, setRoomId } = useSocket();
